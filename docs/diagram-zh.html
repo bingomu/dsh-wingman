@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工具条只画界面，数据与模型都在宿主半</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Noto+Serif+SC:wght@400&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f5f5f5; --paper-2:#ececec; --ink:#2d3142; --muted:#4f5d75;
+  --soft:#5a6580; --rule:rgba(45,49,66,0.12); --accent:#bf4520; --accent-tint:rgba(191,69,32,0.08);
+  --link:#2e5aa8; --doc-w:1080px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Geist', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif;font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased}
+.rd-doc{max-width:var(--doc-w,1080px);margin:0 auto;padding:64px 40px 80px}
+.rd-eyebrow{font-family:'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace;font-size:11px;font-weight:500;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted)}
+.rd-title{font-family:'Instrument Serif', 'Noto Serif SC', 'Songti SC', 'SimSun', Georgia, serif;font-weight:400;font-size:clamp(26px,3.4vw,42px);
+  line-height:1.16;letter-spacing:-.005em;margin:12px 0 0;max-width:20em;
+  text-wrap:balance}
+.rd-takeaway{margin:16px 0 0;max-width:66ch;font-size:17px;line-height:1.65;color:var(--muted)}
+.rd-takeaway strong{color:var(--ink);font-weight:600}
+.rd-figure{margin:36px 0 0}
+.rd-canvas{width:100%;overflow-x:auto;padding-bottom:4px}
+.rd-canvas svg{width:100%;min-width:832px;height:auto;display:block}
+.rd-caption{margin:14px 0 0;font-size:13px;line-height:1.6;color:var(--soft);max-width:70ch}
+.rd-steps{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:10px;
+  border-top:1px solid var(--rule);padding-top:20px}
+.rd-steps li{display:grid;grid-template-columns:26px 1fr;gap:12px;align-items:start}
+.rd-steps .n{display:flex;align-items:center;justify-content:center;
+  width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;
+  font-size:11px;font-weight:600;margin-top:2px}
+.rd-steps .t{font-weight:600;font-size:14px}
+.rd-steps .d{display:block;color:var(--muted);font-size:13px;font-weight:400;margin-top:1px}
+.rd-legend{display:flex;flex-wrap:wrap;gap:10px 22px;margin:26px 0 0;
+  padding-top:16px;border-top:1px solid var(--rule);font-size:12px;color:var(--muted)}
+.rd-legend li{display:inline-flex;align-items:center;gap:7px;list-style:none}
+.rd-legend ul{display:contents}
+.rd-swatch{width:14px;height:10px;border-radius:2px;display:inline-block}
+.rd-footer{margin:34px 0 0;padding-top:14px;border-top:1px solid var(--rule);
+  display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace;font-size:11px;
+  color:var(--soft);letter-spacing:.04em}
+.rd-footer .dot{opacity:.5}
+@media print{
+  body{background:#fff}
+  .rd-doc{padding:24px 0}
+  .rd-canvas{overflow-x:visible}
+  .rd-canvas svg{min-width:0}
+}
+@media (max-width:640px){
+  .rd-doc{padding:40px 20px 56px}
+  .rd-title{font-size:26px}
+}
+
+.rd-canvas svg .rd-node,.rd-canvas svg .rd-edge,.rd-canvas svg .rd-edge-label{
+  transition:opacity .18s ease,stroke .18s ease,stroke-width .18s ease}
+.rd-canvas svg .rd-edge-label{stroke:none}
+.rd-canvas svg .rd-node{cursor:default;
+  animation:rd-rise .52s cubic-bezier(.2,.7,.3,1) backwards;
+  animation-delay:calc(var(--i,0)*55ms)}
+.rd-canvas svg .rd-edge,.rd-canvas svg .rd-edge-label{
+  animation:rd-fade .6s ease backwards;animation-delay:.25s}
+@keyframes rd-rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes rd-fade{from{opacity:0}to{opacity:1}}
+.rd-canvas svg .rd-node:hover>.rd-shape{stroke:#bf4520;stroke-width:1.9}
+.rd-canvas svg:has(.rd-node:hover) .rd-node:not(:hover){opacity:.32}
+.rd-canvas svg:has(.rd-node:hover) .rd-edge{opacity:.14}
+.rd-canvas svg:has(.rd-node:hover) .rd-edge-label{opacity:.16}
+.rd-canvas svg:has(.rd-edge:hover) .rd-node{opacity:.55}
+.rd-canvas svg:has(.rd-edge:hover) .rd-edge:not(:hover){opacity:.28}
+.rd-canvas svg:has(.rd-edge:hover) .rd-edge-label:not(:hover){opacity:.3}
+.rd-canvas svg .rd-edge:hover{stroke-width:2.1}
+.rd-steps li{transition:background .15s ease;border-radius:6px}
+.rd-steps li:hover{background:var(--accent-tint)}
+.rd-steps .n{transition:transform .15s ease}
+.rd-steps li:hover .n{transform:scale(1.12)}
+@media (prefers-reduced-motion:reduce){
+  .rd-canvas svg *,.rd-steps *{animation:none!important;transition:none!important}}
+@media print{
+  .rd-canvas svg .rd-node,.rd-canvas svg .rd-edge,.rd-canvas svg .rd-edge-label{
+    animation:none!important;opacity:1!important}}
+
+.rd-canvas svg:has([data-node-id="client"]:hover) .rd-edge[data-edge-from="client"],
+.rd-canvas svg:has([data-node-id="client"]:hover) .rd-edge[data-edge-to="client"]{
+  opacity:1!important;stroke:#bf4520!important;stroke-width:1.8!important}
+.rd-canvas svg:has([data-node-id="client"]:hover) .rd-edge-label[data-edge-from="client"],
+.rd-canvas svg:has([data-node-id="client"]:hover) .rd-edge-label[data-edge-to="client"]{
+  opacity:1!important}
+
+.rd-canvas svg:has([data-node-id="api"]:hover) .rd-edge[data-edge-from="api"],
+.rd-canvas svg:has([data-node-id="api"]:hover) .rd-edge[data-edge-to="api"]{
+  opacity:1!important;stroke:#bf4520!important;stroke-width:1.8!important}
+.rd-canvas svg:has([data-node-id="api"]:hover) .rd-edge-label[data-edge-from="api"],
+.rd-canvas svg:has([data-node-id="api"]:hover) .rd-edge-label[data-edge-to="api"]{
+  opacity:1!important}
+
+.rd-canvas svg:has([data-node-id="sticky"]:hover) .rd-edge[data-edge-from="sticky"],
+.rd-canvas svg:has([data-node-id="sticky"]:hover) .rd-edge[data-edge-to="sticky"]{
+  opacity:1!important;stroke:#bf4520!important;stroke-width:1.8!important}
+.rd-canvas svg:has([data-node-id="sticky"]:hover) .rd-edge-label[data-edge-from="sticky"],
+.rd-canvas svg:has([data-node-id="sticky"]:hover) .rd-edge-label[data-edge-to="sticky"]{
+  opacity:1!important}
+
+.rd-canvas svg:has([data-node-id="followup"]:hover) .rd-edge[data-edge-from="followup"],
+.rd-canvas svg:has([data-node-id="followup"]:hover) .rd-edge[data-edge-to="followup"]{
+  opacity:1!important;stroke:#bf4520!important;stroke-width:1.8!important}
+.rd-canvas svg:has([data-node-id="followup"]:hover) .rd-edge-label[data-edge-from="followup"],
+.rd-canvas svg:has([data-node-id="followup"]:hover) .rd-edge-label[data-edge-to="followup"]{
+  opacity:1!important}
+
+.rd-canvas svg:has([data-node-id="disk"]:hover) .rd-edge[data-edge-from="disk"],
+.rd-canvas svg:has([data-node-id="disk"]:hover) .rd-edge[data-edge-to="disk"]{
+  opacity:1!important;stroke:#bf4520!important;stroke-width:1.8!important}
+.rd-canvas svg:has([data-node-id="disk"]:hover) .rd-edge-label[data-edge-from="disk"],
+.rd-canvas svg:has([data-node-id="disk"]:hover) .rd-edge-label[data-edge-to="disk"]{
+  opacity:1!important}
+
+.rd-canvas svg:has([data-node-id="llm"]:hover) .rd-edge[data-edge-from="llm"],
+.rd-canvas svg:has([data-node-id="llm"]:hover) .rd-edge[data-edge-to="llm"]{
+  opacity:1!important;stroke:#bf4520!important;stroke-width:1.8!important}
+.rd-canvas svg:has([data-node-id="llm"]:hover) .rd-edge-label[data-edge-from="llm"],
+.rd-canvas svg:has([data-node-id="llm"]:hover) .rd-edge-label[data-edge-to="llm"]{
+  opacity:1!important}
+
+.rd-canvas svg:has([data-node-id="watch"]:hover) .rd-edge[data-edge-from="watch"],
+.rd-canvas svg:has([data-node-id="watch"]:hover) .rd-edge[data-edge-to="watch"]{
+  opacity:1!important;stroke:#bf4520!important;stroke-width:1.8!important}
+.rd-canvas svg:has([data-node-id="watch"]:hover) .rd-edge-label[data-edge-from="watch"],
+.rd-canvas svg:has([data-node-id="watch"]:hover) .rd-edge-label[data-edge-to="watch"]{
+  opacity:1!important}
+
+body:has(.rd-steps li[data-step-for="client"]:hover) [data-node-id="client"]>.rd-shape{
+  stroke:#bf4520!important;stroke-width:2!important}
+body:has(.rd-steps li[data-step-for="client"]:hover) [data-node-id="client"]{opacity:1!important}
+
+body:has(.rd-steps li[data-step-for="api"]:hover) [data-node-id="api"]>.rd-shape{
+  stroke:#bf4520!important;stroke-width:2!important}
+body:has(.rd-steps li[data-step-for="api"]:hover) [data-node-id="api"]{opacity:1!important}
+
+body:has(.rd-steps li[data-step-for="disk"]:hover) [data-node-id="disk"]>.rd-shape{
+  stroke:#bf4520!important;stroke-width:2!important}
+body:has(.rd-steps li[data-step-for="disk"]:hover) [data-node-id="disk"]{opacity:1!important}
+
+body:has(.rd-steps li[data-step-for="llm"]:hover) [data-node-id="llm"]>.rd-shape{
+  stroke:#bf4520!important;stroke-width:2!important}
+body:has(.rd-steps li[data-step-for="llm"]:hover) [data-node-id="llm"]{opacity:1!important}
+
+body:has(.rd-steps li[data-step-for="sticky"]:hover) [data-node-id="sticky"]>.rd-shape{
+  stroke:#bf4520!important;stroke-width:2!important}
+body:has(.rd-steps li[data-step-for="sticky"]:hover) [data-node-id="sticky"]{opacity:1!important}
+</style>
+</head>
+<body class="rd-light">
+<main class="rd-doc" data-rd-doc="1">
+  <div class="rd-eyebrow">ARCHITECTURE · 结构</div>
+  <h1 class="rd-title">工具条只画界面，数据与模型都在宿主半</h1>
+  <p class="rd-takeaway">没有第二套存储：常用指令 / 自定义入口 / 提醒落在 $DSH_HOME/wingman 的三个 JSON；便签与跟进仍然写进它们自己的插件。</p>
+  <figure class="rd-figure">
+    <div class="rd-canvas"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 832 356" role="img" aria-labelledby="wingman-architecture-title wingman-architecture-desc" data-rd-type="architecture"><title id="wingman-architecture-title">工具条只画界面，数据与模型都在宿主半</title><desc id="wingman-architecture-desc">没有第二套存储：常用指令 / 自定义入口 / 提醒落在 $DSH_HOME/wingman 的三个 JSON；便签与跟进仍然写进它们自己的插件。</desc><defs><marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker><marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#bf4520"/></marker><marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker></defs><rect width="832" height="356" fill="#f5f5f5"/><g transform="translate(60.0,186.0)"><rect x="-20.0" y="-62.0" width="188.0" height="108.0" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.1)" stroke-width="0.8"/><text x="-6.0" y="-46.0" fill="#5a6580" font-size="8" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="start" data-role="eyebrow" letter-spacing="0.14em">浏览器半 · 只画</text><rect x="260.0" y="-146.0" width="216.0" height="276.0" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.1)" stroke-width="0.8"/><text x="274.0" y="-130.0" fill="#5a6580" font-size="8" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="start" data-role="eyebrow" letter-spacing="0.14em">宿主半 · 三个 HTTP 入口</text><rect x="568.0" y="-146.0" width="164.0" height="276.0" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.1)" stroke-width="0.8"/><text x="582.0" y="-130.0" fill="#5a6580" font-size="8" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="start" data-role="eyebrow" letter-spacing="0.14em">本机 · 存储与服务</text><path d="M 148.0,0.0 L 164.0,0.0 Q 172.0,0.0 172.0,-8.0 L 172.0,-76.0 Q 172.0,-84.0 180.0,-84.0 L 302.0,-84.0" fill="none" stroke="#bf4520" stroke-width="1.4" marker-end="url(#arrow-accent)" class="rd-edge" data-rd-edge="1" data-edge-from="client" data-edge-to="api"/><path d="M 434.0,-84.0 L 588.0,-84.0" fill="none" stroke="#bf4520" stroke-width="1.4" marker-end="url(#arrow-accent)" class="rd-edge" data-rd-edge="1" data-edge-from="api" data-edge-to="disk"/><path d="M 148.0,0.0 L 280.0,0.0" fill="none" stroke="#4f5d75" stroke-width="1.1" stroke-dasharray="5,4" marker-end="url(#arrow)" class="rd-edge" data-rd-edge="1" data-edge-from="client" data-edge-to="sticky"/><path d="M 148.0,0.0 L 194.0,0.0 Q 202.0,0.0 202.0,8.0 L 202.0,76.0 Q 202.0,84.0 210.0,84.0 L 312.0,84.0" fill="none" stroke="#4f5d75" stroke-width="1.1" stroke-dasharray="5,4" marker-end="url(#arrow)" class="rd-edge" data-rd-edge="1" data-edge-from="client" data-edge-to="followup"/><path d="M 434.0,-84.0 L 490.0,-84.0 Q 498.0,-84.0 498.0,-76.0 L 498.0,-8.0 Q 498.0,0.0 506.0,0.0 L 588.0,0.0" fill="none" stroke="#4f5d75" stroke-width="1.1" marker-end="url(#arrow)" class="rd-edge" data-rd-edge="1" data-edge-from="api" data-edge-to="llm"/><path d="M 434.0,-84.0 L 500.0,-84.0 Q 508.0,-84.0 508.0,-76.0 L 508.0,76.0 Q 508.0,84.0 516.0,84.0 L 590.0,84.0" fill="none" stroke="#4f5d75" stroke-width="1.1" marker-end="url(#arrow)" class="rd-edge" data-rd-edge="1" data-edge-from="api" data-edge-to="watch"/><g class="rd-edge-label" data-edge-from="client" data-edge-to="api"><rect x="219.6" y="-108.0" width="34.8" height="14.0" rx="2" fill="#f5f5f5"/><text x="237.0" y="-96.0" fill="#5a6580" font-size="8" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="middle" data-role="arrow" letter-spacing="0.04em">fetch</text></g><g class="rd-edge-label" data-edge-from="api" data-edge-to="disk"><rect x="478.5" y="-123.0" width="65.0" height="14.0" rx="2" fill="#f5f5f5"/><text x="511.0" y="-111.0" fill="#5a6580" font-size="11" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="middle" data-role="arrow" letter-spacing="0.04em">读写 JSON</text></g><g class="rd-edge-label" data-edge-from="client" data-edge-to="sticky"><rect x="181.5" y="-24.0" width="65.0" height="14.0" rx="2" fill="#f5f5f5"/><text x="214.0" y="-12.0" fill="#5a6580" font-size="11" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="middle" data-role="arrow" letter-spacing="0.04em">POST 便签</text></g><g class="rd-edge-label" data-edge-from="client" data-edge-to="followup"><rect x="224.5" y="45.0" width="65.0" height="14.0" rx="2" fill="#f5f5f5"/><text x="257.0" y="57.0" fill="#5a6580" font-size="11" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="middle" data-role="arrow" letter-spacing="0.04em">POST 跟进</text></g><g class="rd-edge-label" data-edge-from="api" data-edge-to="llm"><rect x="506.1" y="-24.0" width="73.8" height="14.0" rx="2" fill="#f5f5f5"/><text x="543.0" y="-12.0" fill="#5a6580" font-size="11" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="middle" data-role="arrow" letter-spacing="0.04em">改写 · 小结</text></g><g class="rd-edge-label" data-edge-from="api" data-edge-to="watch"><rect x="533.0" y="45.0" width="32.0" height="14.0" rx="2" fill="#f5f5f5"/><text x="549.0" y="57.0" fill="#5a6580" font-size="11" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="middle" data-role="arrow" letter-spacing="0.04em">只读</text></g><rect class="rd-mask" x="0.0" y="-26.0" width="148.0" height="52.0" rx="6" fill="#f5f5f5"/><g class="rd-node" data-rd-node="1" data-rd-kind="focal" data-node-id="client" style="--i:0"><title>贴边工具条 + 面板</title><rect class="rd-shape" x="0.0" y="-26.0" width="148.0" height="52.0" rx="6" fill="rgba(191,69,32,0.08)" stroke="#bf4520" stroke-width="1"/><text x="74.0" y="-3.5" fill="#2d3142" font-size="12" font-family="'Geist', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif" text-anchor="middle" data-role="name" font-weight="600">贴边工具条 + 面板</text><text x="74.0" y="10.9" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="middle" data-role="sublabel">client.js</text><circle cx="146.0" cy="-24.0" r="9.0" fill="#bf4520"/><text x="146.0" y="-20.6" fill="#ffffff" font-size="10" font-family="'Geist', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif" text-anchor="middle" data-role="eyebrow" font-weight="600">1</text></g><rect class="rd-mask" x="302.0" y="-110.0" width="132.0" height="52.0" rx="6" fill="#f5f5f5"/><g class="rd-node" data-rd-node="1" data-rd-kind="backend" data-node-id="api" style="--i:1"><title>本机 HTTP 接口</title><rect class="rd-shape" x="302.0" y="-110.0" width="132.0" height="52.0" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/><text x="368.0" y="-87.4" fill="#2d3142" font-size="12" font-family="'Geist', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif" text-anchor="middle" data-role="name" font-weight="600">本机 HTTP 接口</text><text x="368.0" y="-73.0" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="middle" data-role="sublabel">/dsh-wingman/api/*</text><circle cx="432.0" cy="-108.0" r="9.0" fill="#bf4520"/><text x="432.0" y="-104.6" fill="#ffffff" font-size="10" font-family="'Geist', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif" text-anchor="middle" data-role="eyebrow" font-weight="600">2</text></g><rect class="rd-mask" x="280.0" y="-26.0" width="176.0" height="52.0" rx="6" fill="#f5f5f5"/><g class="rd-node" data-rd-node="1" data-rd-kind="external" data-node-id="sticky" style="--i:2"><title>便签墙接口</title><rect class="rd-shape" x="280.0" y="-26.0" width="176.0" height="52.0" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.3)" stroke-width="1"/><text x="368.0" y="-3.5" fill="#2d3142" font-size="12" font-family="'Geist', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif" text-anchor="middle" data-role="name" font-weight="600">便签墙接口</text><text x="368.0" y="10.9" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="middle" data-role="sublabel">/dsh-sticky-wall/api/notes</text><circle cx="454.0" cy="-24.0" r="9.0" fill="#bf4520"/><text x="454.0" y="-20.6" fill="#ffffff" font-size="10" font-family="'Geist', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif" text-anchor="middle" data-role="eyebrow" font-weight="600">5</text></g><rect class="rd-mask" x="312.0" y="58.0" width="112.0" height="52.0" rx="6" fill="#f5f5f5"/><g class="rd-node" data-rd-node="1" data-rd-kind="external" data-node-id="followup" style="--i:3"><title>跟进接口</title><rect class="rd-shape" x="312.0" y="58.0" width="112.0" height="52.0" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.3)" stroke-width="1"/><text x="368.0" y="80.6" fill="#2d3142" font-size="12" font-family="'Geist', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif" text-anchor="middle" data-role="name" font-weight="600">跟进接口</text><text x="368.0" y="95.0" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="middle" data-role="sublabel">/followup/add</text></g><rect class="rd-mask" x="588.0" y="-110.0" width="124.0" height="52.0" rx="6" fill="#f5f5f5"/><g class="rd-node" data-rd-node="1" data-rd-kind="store" data-node-id="disk" style="--i:4"><title>三个本机 JSON</title><rect class="rd-shape" x="588.0" y="-110.0" width="124.0" height="52.0" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/><text x="650.0" y="-87.4" fill="#2d3142" font-size="12" font-family="'Geist', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif" text-anchor="middle" data-role="name" font-weight="600">三个本机 JSON</text><text x="650.0" y="-73.0" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="middle" data-role="sublabel">$DSH_HOME/wingman</text><circle cx="710.0" cy="-108.0" r="9.0" fill="#bf4520"/><text x="710.0" y="-104.6" fill="#ffffff" font-size="10" font-family="'Geist', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif" text-anchor="middle" data-role="eyebrow" font-weight="600">3</text></g><rect class="rd-mask" x="588.0" y="-26.0" width="124.0" height="52.0" rx="6" fill="#f5f5f5"/><g class="rd-node" data-rd-node="1" data-rd-kind="optional" data-node-id="llm" style="--i:5"><title>当前会话模型</title><rect class="rd-shape" x="588.0" y="-26.0" width="124.0" height="52.0" rx="6" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.2)" stroke-width="1" stroke-dasharray="4,3"/><text x="650.0" y="-3.5" fill="#2d3142" font-size="12" font-family="'Geist', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif" text-anchor="middle" data-role="name" font-weight="600">当前会话模型</text><text x="650.0" y="10.9" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="middle" data-role="sublabel">transform / recap</text><circle cx="710.0" cy="-24.0" r="9.0" fill="#bf4520"/><text x="710.0" y="-20.6" fill="#ffffff" font-size="10" font-family="'Geist', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif" text-anchor="middle" data-role="eyebrow" font-weight="600">4</text></g><rect class="rd-mask" x="590.0" y="58.0" width="120.0" height="52.0" rx="6" fill="#f5f5f5"/><g class="rd-node" data-rd-node="1" data-rd-kind="optional" data-node-id="watch" style="--i:6"><title>会话与 token</title><rect class="rd-shape" x="590.0" y="58.0" width="120.0" height="52.0" rx="6" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.2)" stroke-width="1" stroke-dasharray="4,3"/><text x="650.0" y="80.6" fill="#2d3142" font-size="12" font-family="'Geist', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif" text-anchor="middle" data-role="name" font-weight="600">会话与 token</text><text x="650.0" y="95.0" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, 'PingFang SC', monospace" text-anchor="middle" data-role="sublabel">对话状态</text></g></g></svg></div>
+    <figcaption class="rd-caption">从左往右是请求方向，编号 1–5 是建议阅读顺序。实线是本次新增的本机接口，虚线是复用其它插件已有的接口；跟进条数由「对话状态」直接数 followup/tasks.json，图上省略。</figcaption>
+  </figure>
+  <ol class="rd-steps" data-rd-steps="5"><li data-step-for="client"><span class="n">1</span><span><span class="t">贴边工具条 + 面板</span><span class="d">挂在 conversation.input.dock 插槽（退路 conversation.header.leading），只负责画和转发点击</span></span></li><li data-step-for="api"><span class="n">2</span><span><span class="t">本机 HTTP 接口</span><span class="d">index.js 注册 lib/routes.js 的八条路由，读写都在这一层</span></span></li><li data-step-for="disk"><span class="n">3</span><span><span class="t">三个本机 JSON</span><span class="d">snippets / custom / reminders，原子写：临时文件 + rename</span></span></li><li data-step-for="llm"><span class="n">4</span><span><span class="t">当前会话模型</span><span class="d">选中文字与会话小结用当前会话的模型，25 秒超时</span></span></li><li data-step-for="sticky"><span class="n">5</span><span><span class="t">便签墙接口</span><span class="d">便签直接 POST 进便签墙，不改它的存储</span></span></li></ol>
+  <ul class="rd-legend" data-rd-legend="1"><li><span class="rd-swatch" style="background:#2d3142"></span>服务 / 组件</li><li><span class="rd-swatch" style="background:#bf4520"></span>焦点节点</li><li><span class="rd-swatch" style="background:rgba(45,49,66,0.35)"></span>外部系统</li><li><span class="rd-swatch" style="background:rgba(45,49,66,0.55)"></span>存储 / 状态</li><li><span class="rd-swatch" style="background:rgba(45,49,66,0.15)"></span>可选 / 异步</li><li><span class="rd-swatch" style="background:#bf4520"></span>主路径</li><li><span class="rd-swatch" style="background:#4f5d75"></span>异步 / 返回</li></ul>
+  <footer class="rd-footer"><span>ARCHITECTURE</span><span class="dot">·</span><span>fit</span><span class="dot">·</span><span>mixed</span><span class="dot">·</span><span>对照 dsh-wingman v0.33.3 的 client.js / index.js / lib/routes.js</span></footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Wingman · 主视觉（中文）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; }
+  body {
+    background: #f8f5ee;
+    color: #1e1b16;
+    font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+  .stage { position: relative; width: 1200px; height: 630px; padding: 62px 64px 0; }
+
+  /* 左：文字 */
+  .left { position: absolute; left: 64px; top: 62px; width: 512px; }
+  .eyebrow {
+    display: flex; align-items: center; gap: 9px;
+    font-size: 11.5px; font-weight: 600; letter-spacing: .16em;
+    color: #8a7a5e; text-transform: uppercase;
+  }
+  .eyebrow i { width: 7px; height: 7px; border-radius: 50%; background: #b8761d; display: block; }
+
+  h1 {
+    margin-top: 20px;
+    font-size: 58px; line-height: 1.1; letter-spacing: -1px; font-weight: 700;
+  }
+  h1 em { font-style: normal; color: #a8611a; }
+
+  .lead {
+    margin-top: 20px;
+    font-size: 16.5px; line-height: 1.78; color: #5b5344; letter-spacing: .01em;
+  }
+
+  .feats { margin-top: 30px; }
+  .feat { display: flex; align-items: baseline; gap: 16px; padding: 13px 0; border-top: 1px solid #e2dac8; }
+  .feat:last-child { border-bottom: 1px solid #e2dac8; }
+  .feat .no {
+    width: 22px; flex: none;
+    font-size: 11.5px; font-weight: 600; letter-spacing: .06em; color: #a8611a;
+  }
+  .feat .name { width: 78px; flex: none; font-size: 15.5px; font-weight: 600; }
+  .feat .desc { font-size: 14px; color: #5b5344; }
+
+  .foot {
+    position: absolute; left: 64px; bottom: 34px;
+    display: flex; align-items: center; gap: 14px;
+    font-size: 12px; color: #8a7a5e; letter-spacing: .02em;
+  }
+  .foot .repo {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace;
+    font-size: 12px; color: #453f33;
+    border: 1px solid #e0d8c7; border-radius: 6px; padding: 5px 10px;
+  }
+  .foot .ver { font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 12px; }
+  .foot .dot { width: 3px; height: 3px; border-radius: 50%; background: #c3b7a0; }
+
+  /* 右：真实截图 */
+  .card {
+    position: absolute; right: 64px; top: 66px;
+    width: 426px; height: 419px;
+    border-radius: 12px; overflow: hidden;
+    border: 1px solid rgba(60, 48, 30, .12);
+    background: #fff;
+    box-shadow: 0 22px 44px -26px rgba(64, 48, 22, .5), 0 2px 6px -2px rgba(64, 48, 22, .12);
+  }
+  .card img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 0 0; }
+  .cap {
+    position: absolute; right: 64px; top: 503px; width: 426px;
+    text-align: center; font-size: 11.5px; color: #8a7a5e; letter-spacing: .04em;
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="left">
+      <div class="eyebrow"><i></i>DSH PLUGIN · WINGMAN</div>
+      <h1>不占一栏的<br><em>工具条。</em></h1>
+      <p class="lead">42px 常驻在对话左边，点开滑出一张面板。<br>不改变布局、不占左栏、不抢右栏。</p>
+      <div class="feats">
+        <div class="feat"><span class="no">01</span><span class="name">速记</span><span class="desc">一句话，存成便签、跟进或提醒</span></div>
+        <div class="feat"><span class="no">02</span><span class="name">选中文字</span><span class="desc">引用、存下来，或交给模型</span></div>
+        <div class="feat"><span class="no">03</span><span class="name">常用指令</span><span class="desc">点一下插进输入框，不发送</span></div>
+      </div>
+    </div>
+    <div class="card"><img src="../assets/shot-snippets.png" alt="Wingman 常用指令面板"></div>
+    <div class="cap">常用指令面板 · 第 3 颗 ❝</div>
+    <div class="foot">
+      <span class="repo">github.com/bingomu/dsh-wingman</span>
+      <span class="dot"></span>
+      <span class="ver">v0.33.3 · MIT</span>
+    </div>
+  </div>
+</body>
+</html>
