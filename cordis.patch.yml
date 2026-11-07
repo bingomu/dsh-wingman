@@ -1,0 +1,7 @@
+# Wingman：一个「Host 路由 + 浏览器 slot」插件。
+# Host 半侧（index.js）注册 /dsh-wingman/api/snippets，把片段存在本机 JSON；
+# 浏览器半侧（client.js）在 shell.overlay 挂一条贴边细条，点开是片段面板，
+# 另在 conversation.input.dock 挂一个空渲染的桥，用来拿到输入框的写入能力。
+- insert:
+    - id: dsh-wingman
+      name: 'dsh-wingman'

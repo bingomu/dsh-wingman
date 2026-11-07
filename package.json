@@ -1,0 +1,71 @@
+{
+  "name": "dsh-wingman",
+  "version": "0.33.3",
+  "type": "module",
+  "description": "Wingman：对话左侧的贴边工具条（速记 / 选中文字 / 常用指令 / 会话小结 / 对话状态）",
+  "author": {
+    "name": "Genzo",
+    "email": "robinham@gmail.com",
+    "url": "https://x.com/robinham"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/bingomu/dsh-wingman#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bingomu/dsh-wingman.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bingomu/dsh-wingman/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22",
+    "dsh": ">=0.2.1-rc.5 <0.3.0-0"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "lib",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "assets",
+    "LICENSE",
+    "README.md",
+    "ROADMAP.md",
+    "CHANGELOG.md",
+    "docs"
+  ],
+  "scripts": {
+    "check": "node --check index.js && node --check client.js && node --check lib/store.js && node --check lib/routes.js && node --check lib/watch.js && node --check lib/transform.js && node --check lib/llm.js && node --check lib/recap.js && node --check lib/tail.js && node --check lib/custom.js && node --check lib/run.js && node --check lib/reminders.js && node scripts/check-client.mjs",
+    "test": "node --test tests/store.test.mjs tests/watch.test.mjs tests/transform.test.mjs tests/recap.test.mjs tests/tail.test.mjs tests/custom.test.mjs tests/reminders.test.mjs tests/routes.test.mjs",
+    "snapshot": "node scripts/snapshot.mjs",
+    "rollback": "node scripts/rollback.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    },
+    "compatibility": {
+      "dshReleases": {
+        "0.2.2-rc.1": "compatible"
+      }
+    }
+  }
+}
