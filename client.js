@@ -2107,7 +2107,7 @@ window.__ModuleLoader__.load({
       return parts.join('')
     })()
 
-    const VERSION = '1.0.2'
+    const VERSION = '1.0.3'
 
     function EyeIcon(props) {
       return h('svg', { viewBox: '0 0 16 16', width: 14, height: 14, 'aria-hidden': true, style: { display: 'block' } },

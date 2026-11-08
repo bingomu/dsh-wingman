@@ -4,7 +4,7 @@
 
 **Wingman: a tool strip that lives beside the conversation.** A 42px strip stays docked; click it and a panel slides out. It changes no layout, takes no left column, steals no right column — below 1100px wide it moves above the composer and takes about 42px of height. The first blade is Note: jot something down without leaving the conversation — a sticky note, a follow-up, or a reminder.
 
-> Status: **v1.0.2**. Five built-in blades — Note / Process / Snippets / Summary / Status — plus custom entries and a settings gear.
+> Status: **v1.0.3**. Five built-in blades — Note / Process / Snippets / Summary / Status — plus custom entries and a settings gear.
 
 [中文](README.md) · English
 
@@ -20,19 +20,19 @@ The same place in the dark theme — the strip follows the host theme, no extra 
 
 ## Close-ups
 
-![Snippets panel](assets/shot-snippets.png)
+<img src="assets/shot-snippets.png" width="420" alt="Snippets panel">
 
 Snippets: search, groups and three built-in samples inside a 308px panel; click one to drop it into the composer (**nothing is sent**), and the panel closes itself.
 
-![Process panel](assets/shot-transform.png)
+<img src="assets/shot-transform.png" width="420" alt="Process panel">
 
 With text selected you can quote it, save it as a sticky note or snippet, copy it, or hand it to the model to rewrite, summarise or translate.
 
-![Settings panel](assets/shot-settings.png)
+<img src="assets/shot-settings.png" width="420" alt="Settings panel">
 
 Settings holds display order, hidden entries, the snap switch, position reset and custom entries.
 
-![Collapsed feather](assets/shot-collapsed.png)
+<img src="assets/shot-collapsed.png" width="150" alt="Collapsed feather">
 
 Collapsed, it is just a feather; click it to bring the strip back, or drag it somewhere else.
 
@@ -154,7 +154,7 @@ Click the gear at the bottom:
 Install from GitHub (DSH ≥ 0.2.1-rc.5 required). Package name: `@bingomu/dsh-wingman`:
 
 ```bash
-dsh plugin add github:bingomu/dsh-wingman#v1.0.2
+dsh plugin add github:bingomu/dsh-wingman#v1.0.3
 ```
 
 For local development you can also hand the plugin directory to the plugin manager:
