@@ -22,6 +22,17 @@ const file = path.resolve(process.argv[2] ?? 'client.js')
 const source = fs.readFileSync(file, 'utf8')
 const failures = []
 
+/** 入口 id 必须等于包名：从旁边的 package.json 取，别写死（改名时这里最容易漏）。 */
+function packageName() {
+  try {
+    const raw = fs.readFileSync(path.join(path.dirname(file), 'package.json'), 'utf8')
+    const name = JSON.parse(raw)?.name
+    return typeof name === 'string' && name !== '' ? name : null
+  } catch {
+    return null
+  }
+}
+
 const ok = (label) => process.stdout.write(`✅ ${label}\n`)
 const bad = (label, detail) => {
   failures.push(label)
@@ -158,7 +169,9 @@ try {
   vm.createContext(sandbox)
   vm.runInContext(source, sandbox, { filename: file })
   if (entry === null) throw new Error('模块没有调用 window.__ModuleLoader__.load')
-  if (entry.id !== 'dsh-wingman') throw new Error(`入口 id 不对：${entry.id}`)
+  const expectedId = packageName()
+  if (expectedId === null) throw new Error('读不到 package.json 的 name，无法校验入口 id')
+  if (entry.id !== expectedId) throw new Error(`入口 id 与包名不一致：client 是 ${entry.id}，package.json 是 ${expectedId}`)
   const plugin = entry.factory((name) => {
     if (name === 'react') return hooks
     throw new Error(`require 了未注入的包：${name}`)

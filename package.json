@@ -1,6 +1,6 @@
 {
-  "name": "dsh-wingman",
-  "version": "0.33.3",
+  "name": "@bingomu/dsh-wingman",
+  "version": "1.0.0",
   "type": "module",
   "description": "Wingman：对话左侧的贴边工具条（速记 / 选中文字 / 常用指令 / 会话小结 / 对话状态）",
   "author": {
@@ -40,10 +40,12 @@
     "assets",
     "LICENSE",
     "README.md",
+    "README.en.md",
     "ROADMAP.md",
     "CHANGELOG.md",
     "screenshots.json",
-    "docs"
+    "docs",
+    "!docs/p1"
   ],
   "scripts": {
     "check": "node --check index.js && node --check client.js && node --check lib/store.js && node --check lib/routes.js && node --check lib/watch.js && node --check lib/transform.js && node --check lib/llm.js && node --check lib/recap.js && node --check lib/tail.js && node --check lib/custom.js && node --check lib/run.js && node --check lib/reminders.js && node scripts/check-client.mjs",

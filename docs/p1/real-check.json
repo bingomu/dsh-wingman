@@ -1,0 +1,766 @@
+{
+  "startedAt": "2026-11-08T08:45:58.715Z",
+  "port": 65420,
+  "checks": [
+    {
+      "id": "0-隐私-收起侧边栏",
+      "ok": true,
+      "detail": "已点击「收起侧边栏」，会话标题不再出现在截图里",
+      "kind": "check"
+    },
+    {
+      "id": "1-工具条-42px-浮层",
+      "ok": true,
+      "detail": "宽 42px · position:fixed · pointer-events:none · z-index:2147482000 · 父层:[{\"tag\":\"BODY\",\"cls\":\"\",\"pos\":\"static\"},{\"tag\":\"HTML\",\"cls\":\"\",\"pos\":\"static\"}]",
+      "kind": "check"
+    },
+    {
+      "id": "1-工具条-入口齐全",
+      "ok": true,
+      "detail": "入口 6 个：dsw-tone--amber / dsw-tone--sage dsw-cell--idle / dsw-tone--blue / dsw-tone--rose / dsw-tone--slate / dsw-tone--gray",
+      "kind": "check"
+    },
+    {
+      "id": "1b-对话状态面板可打开",
+      "ok": true,
+      "detail": "面板「对话状态」行：[{\"label\":\"模型\",\"value\":\"—\"},{\"label\":\"本轮\",\"value\":\"输入 — · 输出 —\"},{\"label\":\"子代理\",\"value\":\"0 个运行中\"},{\"label\":\"跟进\",\"value\":\"10 条未完成\"}]",
+      "kind": "check"
+    },
+    {
+      "id": "1c-拿到会话 id",
+      "ok": true,
+      "detail": "当前会话：session-7f553542-06dd-4642-98b7-33fb02832194",
+      "kind": "check"
+    },
+    {
+      "id": "1d-面板关着时 0 次 watch 请求",
+      "ok": true,
+      "detail": "面板关闭后 10 秒内 /api/watch 请求 0 次",
+      "kind": "check"
+    },
+    {
+      "id": "3-composer-存在",
+      "ok": true,
+      "detail": "输入框 DIV.JZLxKW_input @ {\"x\":286,\"y\":429,\"w\":914,\"h\":52}",
+      "kind": "check"
+    },
+    {
+      "id": "3-输入框-写入测试文字",
+      "ok": true,
+      "detail": "输入框内容：\"工具条验收测试：这句话会被改写成一条指令。\"",
+      "kind": "check"
+    },
+    {
+      "id": "3-输入框-全选",
+      "ok": true,
+      "detail": "选中 \"工具条验收测试：这句话会被改写成一条指令。\"（选区在输入框内：true）",
+      "kind": "check"
+    },
+    {
+      "id": "3-输入框-清空",
+      "ok": true,
+      "detail": "输入框已清空",
+      "kind": "check"
+    },
+    {
+      "id": "4-发测试消息",
+      "ok": true,
+      "detail": "正文里出现了测试消息：工具条验收测试：请只回复 OK。",
+      "kind": "check"
+    },
+    {
+      "id": "4-本轮真正结束",
+      "ok": true,
+      "detail": "会话 jsonl 走到 turn/end（第 1 次）",
+      "kind": "check"
+    },
+    {
+      "id": "P1-1b-选中正文",
+      "ok": true,
+      "detail": "选中 \"工具条验收测试：请只回复 OK。\"（SPAN._plainRun_fbulu_6）",
+      "kind": "check"
+    },
+    {
+      "id": "P1-1c-面板拿到正文选区",
+      "ok": true,
+      "detail": "面板引用：\"工具条验收测试：请只回复 OK。\" · 16 字",
+      "kind": "check"
+    },
+    {
+      "id": "P1-1d-点「改写成指令」",
+      "ok": true,
+      "detail": "已点击（本次唯一的改写模型调用）",
+      "kind": "check"
+    },
+    {
+      "id": "P1-1e-模型返回改写结果",
+      "ok": true,
+      "detail": "改写结果（27 字）：\"执行工具条验收测试：仅回复“OK”，不得输出其他内容。\"",
+      "kind": "check"
+    },
+    {
+      "id": "P1-1f-输入框变成模型返回的改写结果",
+      "ok": true,
+      "detail": "插入前输入框 \"\" → 插入后 \"执行工具条验收测试：仅回复“OK”，不得输出其他内容。\"",
+      "kind": "check"
+    },
+    {
+      "id": "P1-2-模型",
+      "ok": true,
+      "detail": "面板「deepseek-account · deepseek-flash」 vs 宿主 request/context「deepseek-account · deepseek-flash」（上下文窗口 1048576）；GUI 模型选择器「DeepSeek-V4.1-Flash High」；模型目录里能把 id 与展示名对上：true",
+      "kind": "check"
+    },
+    {
+      "id": "P1-2-tokens",
+      "ok": true,
+      "detail": "面板「输入 279 · 输出 2 · 缓存读 25.2k」 vs 会话 jsonl 最后一条 usage「输入 279 · 输出 2 · 缓存读 25216」；面板上下文环 25.5k / 1.0M（2%）",
+      "kind": "check"
+    },
+    {
+      "id": "P1-2a-子代理起跑前为 0",
+      "ok": true,
+      "detail": "面板：0 个运行中",
+      "kind": "check"
+    },
+    {
+      "id": "P1-2b-子代理出现在面板里",
+      "ok": true,
+      "detail": "面板「0 个运行中 · 本会话 1 个子代理」；会话 jsonl 里的 subagent/catalog 0→1",
+      "kind": "check"
+    },
+    {
+      "id": "P1-2c-子代理那一轮结束",
+      "ok": true,
+      "detail": "会话 jsonl 走到 turn/end（第 2 次）",
+      "kind": "check"
+    },
+    {
+      "id": "P1-2d-面板开着不点刷新自己更新",
+      "ok": false,
+      "detail": "没点刷新，页脚自己从「更新于 00:47:27\n刷新」变成「更新于 00:47:30\n刷新」（用时 3610ms，期间静默请求 0 次）；子代理行「0 个运行中 · 本会话 1 个子代理」；截图 docs/p1/p1-2d-auto-refresh.png",
+      "kind": "check"
+    },
+    {
+      "id": "P1-2e-跟进数",
+      "ok": true,
+      "detail": "面板「10 条未完成」 vs tasks.json 未完成条数 10",
+      "kind": "check"
+    },
+    {
+      "id": "P1-3-速记面板",
+      "ok": true,
+      "detail": "面板：速记 · 模式：[\"便签\",\"跟进\",\"提醒\"] · 统计：\"便签 3 张 · 跟进 10 条未完成\"",
+      "kind": "check"
+    },
+    {
+      "id": "P1-3-写入测试便签",
+      "ok": true,
+      "detail": "输入框：\"工具条验收测试便签（跑完整理会删掉）\"",
+      "kind": "check"
+    },
+    {
+      "id": "P1-3-便签真的写进便签墙",
+      "ok": true,
+      "detail": "notes.json 多了一张：id=n-mw7lape6-b336 text=\"工具条验收测试便签（跑完整理会删掉）\"；面板提示「已贴上：工具条验收测试便签（跑完整理会删掉）」",
+      "kind": "check"
+    },
+    {
+      "id": "P1-3-面板统计 +1",
+      "ok": true,
+      "detail": "面板统计「便签 4 张 · 跟进 10 条未完成」，便签墙之前 3 张",
+      "kind": "check"
+    },
+    {
+      "id": "P1-3-清理测试便签",
+      "ok": true,
+      "detail": "已删掉 n-mw7lape6-b336；便签墙剩 3 张",
+      "kind": "check"
+    },
+    {
+      "id": "自检-1440-light-工具条不压正文",
+      "ok": true,
+      "detail": "视口 1440×900 · rail {\"x\":56,\"y\":218,\"w\":42,\"h\":378}（fixed/42px）· 正文列 {\"left\":302,\"right\":1187,\"width\":886} · 被 rail 压到的文字元素 0 个 · 与输入框相交 false · document.scrollWidth 1440 · 截图 docs/p1/self-check-1440-light.png",
+      "kind": "check"
+    },
+    {
+      "id": "自检-1440-dark-工具条不压正文",
+      "ok": true,
+      "detail": "视口 1440×900 · rail {\"x\":56,\"y\":218,\"w\":42,\"h\":378}（fixed/42px）· 正文列 {\"left\":302,\"right\":1187,\"width\":886} · 被 rail 压到的文字元素 0 个 · 与输入框相交 false · document.scrollWidth 1440 · 截图 docs/p1/self-check-1440-dark.png",
+      "kind": "check"
+    },
+    {
+      "id": "自检-1000-light-工具条不压正文",
+      "ok": false,
+      "detail": "视口 1000×820 · rail {\"x\":56,\"y\":218,\"w\":42,\"h\":378}（fixed/42px）· 正文列 {\"left\":88,\"right\":961,\"width\":873} · 被 rail 压到的文字元素 4 个 · 与输入框相交 false · document.scrollWidth 1000 · 截图 docs/p1/self-check-1000-light.png",
+      "kind": "check"
+    },
+    {
+      "id": "自检-1000-dark-工具条不压正文",
+      "ok": true,
+      "detail": "视口 1000×820 · rail {\"x\":56,\"y\":646,\"w\":258,\"h\":38}（static/258px）· 正文列 {\"left\":185,\"right\":865,\"width\":680} · 被 rail 压到的文字元素 0 个 · 与输入框相交 false · document.scrollWidth 1000 · 截图 docs/p1/self-check-1000-dark.png",
+      "kind": "check"
+    },
+    {
+      "id": "自检-760-narrow-工具条不压正文",
+      "ok": true,
+      "detail": "视口 760×820 · rail {\"x\":56,\"y\":646,\"w\":258,\"h\":38}（static/258px）· 正文列 {\"left\":88,\"right\":721,\"width\":633} · 被 rail 压到的文字元素 0 个 · 与输入框相交 false · document.scrollWidth 760 · 截图 docs/p1/self-check-760-narrow.png",
+      "kind": "check"
+    },
+    {
+      "id": "自检-工具条显示/隐藏正文宽度不变",
+      "ok": false,
+      "detail": "收起前 center=1440/composer=708 → 收起后 center=1440/composer=708 → 恢复后 center=1440/composer=708",
+      "kind": "check"
+    },
+    {
+      "id": "红线-无 location.reload",
+      "ok": true,
+      "detail": "client.js 里没有 location.reload(",
+      "kind": "check"
+    },
+    {
+      "id": "红线-无插件报错",
+      "ok": true,
+      "detail": "控制台没有 wingman 相关 error",
+      "kind": "check"
+    }
+  ],
+  "findings": [
+    {
+      "id": "P1-1-字面流程-输入框全选后点✦",
+      "detail": "面板没认输入框里的选区：点 ✦ 后面板是空态「先在正文里选中一段文字」。按 client.js 的 currentSelection()，选区落在 textarea/input/contenteditable 里会被排除，所以「往输入框写文字 → 全选 → 改写」这条验收写法本身走不通；真实可用路径是选中正文再改写，见 P1-1 真流程"
+    },
+    {
+      "id": "P1-2d-子代理运行状态口径",
+      "detail": "跑完后子代理行：「0 个运行中 · 本会话 1 个子代理」。宿主 listDescendants 对 external（Codex）子代理永远报 activity='inactive'（子级没有 DSH session），所以「运行中」在这个 profile 里恒为 0；面板同时显示「共 N 个」，不会假装没起过。"
+    },
+    {
+      "id": "自检-1000-light-响应式",
+      "detail": "15 秒内工具条没切到 横排（窄栏宽度≠42）；railCount=1 class=\"dsw-rail dsw-rail--snapped dsw-rail--dim\""
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "p1-1-rewrite-result-1440-light",
+      "path": "docs/p1/p1-1-rewrite-result-1440-light.png",
+      "bytes": 156467,
+      "hiddenHints": 0
+    },
+    {
+      "name": "p1-1-rewrite-1440-light",
+      "path": "docs/p1/p1-1-rewrite-1440-light.png",
+      "bytes": 156467,
+      "hiddenHints": 0
+    },
+    {
+      "name": "p1-2-subagent-running",
+      "path": "docs/p1/p1-2-subagent-running.png",
+      "bytes": 209426,
+      "hiddenHints": 1
+    },
+    {
+      "name": "p1-2d-auto-refresh",
+      "path": "docs/p1/p1-2d-auto-refresh.png",
+      "bytes": 213490,
+      "hiddenHints": 1
+    },
+    {
+      "name": "p1-2-status-1440-light",
+      "path": "docs/p1/p1-2-status-1440-light.png",
+      "bytes": 215412,
+      "hiddenHints": 1
+    },
+    {
+      "name": "p1-3-note-saved",
+      "path": "docs/p1/p1-3-note-saved.png",
+      "bytes": 22070,
+      "hiddenHints": 1
+    },
+    {
+      "name": "self-check-1440-light",
+      "path": "docs/p1/self-check-1440-light.png",
+      "bytes": 191822,
+      "hiddenHints": 0
+    },
+    {
+      "name": "self-check-1440-dark",
+      "path": "docs/p1/self-check-1440-dark.png",
+      "bytes": 173951,
+      "hiddenHints": 0
+    },
+    {
+      "name": "self-check-1000-light",
+      "path": "docs/p1/self-check-1000-light.png",
+      "bytes": 160740,
+      "hiddenHints": 0
+    },
+    {
+      "name": "self-check-1000-dark",
+      "path": "docs/p1/self-check-1000-dark.png",
+      "bytes": 143901,
+      "hiddenHints": 0
+    },
+    {
+      "name": "self-check-760-narrow",
+      "path": "docs/p1/self-check-760-narrow.png",
+      "bytes": 150257,
+      "hiddenHints": 0
+    }
+  ],
+  "failures": [
+    {
+      "id": "P1-2d-面板开着不点刷新自己更新",
+      "detail": "没点刷新，页脚自己从「更新于 00:47:27\n刷新」变成「更新于 00:47:30\n刷新」（用时 3610ms，期间静默请求 0 次）；子代理行「0 个运行中 · 本会话 1 个子代理」；截图 docs/p1/p1-2d-auto-refresh.png"
+    },
+    {
+      "id": "自检-1000-light-工具条不压正文",
+      "detail": "视口 1000×820 · rail {\"x\":56,\"y\":218,\"w\":42,\"h\":378}（fixed/42px）· 正文列 {\"left\":88,\"right\":961,\"width\":873} · 被 rail 压到的文字元素 4 个 · 与输入框相交 false · document.scrollWidth 1000 · 截图 docs/p1/self-check-1000-light.png"
+    },
+    {
+      "id": "自检-工具条显示/隐藏正文宽度不变",
+      "detail": "收起前 center=1440/composer=708 → 收起后 center=1440/composer=708 → 恢复后 center=1440/composer=708"
+    }
+  ],
+  "watchQuiet": {
+    "windowMs": 10000,
+    "requests": 0
+  },
+  "literalComposerSelection": {
+    "selectionFacts": {
+      "selected": "工具条验收测试：这句话会被改写成一条指令。",
+      "rangeCount": 1,
+      "inComposer": true
+    },
+    "panel": {
+      "open": true,
+      "title": "选中文字",
+      "empty": "先在正文里选中一段文字",
+      "quote": ""
+    },
+    "recognized": false
+  },
+  "rewrite": {
+    "state": {
+      "kind": "result",
+      "text": "执行工具条验收测试：仅回复“OK”，不得输出其他内容。"
+    },
+    "before": "",
+    "after": "执行工具条验收测试：仅回复“OK”，不得输出其他内容。",
+    "inserted": true
+  },
+  "model": {
+    "panel": "deepseek-account · deepseek-flash",
+    "selector": "DeepSeek-V4.1-Flash\nHigh",
+    "hostContext": {
+      "provider": "deepseek-account",
+      "model": "deepseek-flash",
+      "contextWindow": 1048576,
+      "systemPromptUpdate": "in-history"
+    },
+    "hostHeader": {
+      "provider": "deepseek-account",
+      "model": "deepseek-flash",
+      "reasoningEffort": "high",
+      "maxTokens": 256000
+    },
+    "catalogFile": "docs/p1/model-catalog.json",
+    "mappingOk": true
+  },
+  "tokens": {
+    "panelRound": "输入 279 · 输出 2 · 缓存读 25.2k",
+    "context": {
+      "label": "这段对话用了多少",
+      "value": "25.5k / 1.0M",
+      "percent": "2%"
+    },
+    "lastUsage": {
+      "inputTokens": 279,
+      "outputTokens": 2,
+      "cacheReadTokens": 25216,
+      "cacheWriteTokens": 0,
+      "totalTokens": 25497
+    },
+    "compare": {
+      "ok": true,
+      "pairs": [
+        {
+          "name": "输入",
+          "panel": 279,
+          "truth": 279,
+          "ok": true,
+          "delta": 0,
+          "tolerance": 50
+        },
+        {
+          "name": "输出",
+          "panel": 2,
+          "truth": 2,
+          "ok": true,
+          "delta": 0,
+          "tolerance": 50
+        },
+        {
+          "name": "缓存读",
+          "panel": 25200,
+          "truth": 25216,
+          "ok": true,
+          "delta": 16,
+          "tolerance": 1261
+        }
+      ]
+    },
+    "sessionTotalUsage": 25497,
+    "turns": 1
+  },
+  "subagents": {
+    "before": "0 个运行中",
+    "peak": "0 个运行中 · 本会话 1 个子代理",
+    "screenshot": "docs/p1/p1-2-subagent-running.png",
+    "catalogsBefore": 0,
+    "catalogsAfter": 1
+  },
+  "autoRefresh": {
+    "footerBefore": "更新于 00:47:27\n刷新",
+    "footerAfter": "更新于 00:47:30\n刷新",
+    "afterMs": 3610,
+    "requests": 0,
+    "panelText": "对话状态\n📌\n×\n2%\n这段对话用了多少\n25.7k / 1.0M\n1.0M 窗口\n模型\ndeepseek-account · deepseek-flash\n本轮\n输入 217 · 输出 4 · 缓存读 25.5k\n子代理\n0 个运行中 · 本会话 1 个子代理\n跟进\n10 条未完成\n更新于 00:47:30\n刷新",
+    "subagentRowAfter": "0 个运行中 · 本会话 1 个子代理",
+    "screenshot": "docs/p1/p1-2d-auto-refresh.png"
+  },
+  "followups": {
+    "panel": "10 条未完成",
+    "truth": 10
+  },
+  "statusDump": {
+    "sessionId": "session-7f553542-06dd-4642-98b7-33fb02832194",
+    "model": {
+      "panel": "deepseek-account · deepseek-flash",
+      "selector": "DeepSeek-V4.1-Flash\nHigh",
+      "hostContext": {
+        "provider": "deepseek-account",
+        "model": "deepseek-flash",
+        "contextWindow": 1048576,
+        "systemPromptUpdate": "in-history"
+      },
+      "hostHeader": {
+        "provider": "deepseek-account",
+        "model": "deepseek-flash",
+        "reasoningEffort": "high",
+        "maxTokens": 256000
+      },
+      "catalogFile": "docs/p1/model-catalog.json",
+      "mappingOk": true
+    },
+    "tokens": {
+      "panelRound": "输入 279 · 输出 2 · 缓存读 25.2k",
+      "context": {
+        "label": "这段对话用了多少",
+        "value": "25.5k / 1.0M",
+        "percent": "2%"
+      },
+      "lastUsage": {
+        "inputTokens": 279,
+        "outputTokens": 2,
+        "cacheReadTokens": 25216,
+        "cacheWriteTokens": 0,
+        "totalTokens": 25497
+      },
+      "compare": {
+        "ok": true,
+        "pairs": [
+          {
+            "name": "输入",
+            "panel": 279,
+            "truth": 279,
+            "ok": true,
+            "delta": 0,
+            "tolerance": 50
+          },
+          {
+            "name": "输出",
+            "panel": 2,
+            "truth": 2,
+            "ok": true,
+            "delta": 0,
+            "tolerance": 50
+          },
+          {
+            "name": "缓存读",
+            "panel": 25200,
+            "truth": 25216,
+            "ok": true,
+            "delta": 16,
+            "tolerance": 1261
+          }
+        ]
+      },
+      "sessionTotalUsage": 25497,
+      "turns": 1
+    },
+    "subagents": {
+      "before": "0 个运行中",
+      "peak": "0 个运行中 · 本会话 1 个子代理",
+      "screenshot": "docs/p1/p1-2-subagent-running.png",
+      "catalogsBefore": 0,
+      "catalogsAfter": 1
+    },
+    "followups": {
+      "panel": "10 条未完成",
+      "truth": 10
+    },
+    "context": {
+      "label": "这段对话用了多少",
+      "value": "25.9k / 1.0M",
+      "percent": "2%"
+    }
+  },
+  "layout": [
+    {
+      "name": "1440-light",
+      "width": 1440,
+      "height": 900,
+      "dark": false,
+      "shot": "docs/p1/self-check-1440-light.png",
+      "bodyBg": "rgb(240, 233, 218)",
+      "settled": true,
+      "railCount": 1,
+      "railClass": "dsw-rail dsw-rail--snapped dsw-rail--dim",
+      "compact": false,
+      "viewport": {
+        "w": 1440,
+        "h": 900
+      },
+      "rail": {
+        "x": 56,
+        "y": 218,
+        "w": 42,
+        "h": 378
+      },
+      "railPosition": "fixed",
+      "railWidth": "42px",
+      "centerCol": {
+        "x": 56,
+        "y": 0,
+        "w": 1384,
+        "h": 900
+      },
+      "composer": {
+        "x": 286,
+        "y": 780,
+        "w": 914,
+        "h": 36
+      },
+      "textColumn": {
+        "left": 302,
+        "right": 1187,
+        "width": 886
+      },
+      "railHitsText": [],
+      "railHitsComposer": false,
+      "documentScrollWidth": 1440
+    },
+    {
+      "name": "1440-dark",
+      "width": 1440,
+      "height": 900,
+      "dark": true,
+      "shot": "docs/p1/self-check-1440-dark.png",
+      "bodyBg": "rgb(21, 18, 14)",
+      "settled": true,
+      "railCount": 1,
+      "railClass": "dsw-rail dsw-rail--snapped dsw-rail--dim",
+      "compact": false,
+      "viewport": {
+        "w": 1440,
+        "h": 900
+      },
+      "rail": {
+        "x": 56,
+        "y": 218,
+        "w": 42,
+        "h": 378
+      },
+      "railPosition": "fixed",
+      "railWidth": "42px",
+      "centerCol": {
+        "x": 56,
+        "y": 0,
+        "w": 1384,
+        "h": 900
+      },
+      "composer": {
+        "x": 286,
+        "y": 780,
+        "w": 914,
+        "h": 36
+      },
+      "textColumn": {
+        "left": 302,
+        "right": 1187,
+        "width": 886
+      },
+      "railHitsText": [],
+      "railHitsComposer": false,
+      "documentScrollWidth": 1440
+    },
+    {
+      "name": "1000-light",
+      "width": 1000,
+      "height": 820,
+      "dark": false,
+      "shot": "docs/p1/self-check-1000-light.png",
+      "bodyBg": "rgb(240, 233, 218)",
+      "settled": false,
+      "railCount": 1,
+      "railClass": "dsw-rail dsw-rail--snapped dsw-rail--dim",
+      "compact": false,
+      "viewport": {
+        "w": 1000,
+        "h": 820
+      },
+      "rail": {
+        "x": 56,
+        "y": 218,
+        "w": 42,
+        "h": 378
+      },
+      "railPosition": "fixed",
+      "railWidth": "42px",
+      "centerCol": {
+        "x": 56,
+        "y": 0,
+        "w": 944,
+        "h": 820
+      },
+      "composer": {
+        "x": 72,
+        "y": 700,
+        "w": 901,
+        "h": 36
+      },
+      "textColumn": {
+        "left": 88,
+        "right": 961,
+        "width": 873
+      },
+      "railHitsText": [
+        "OK",
+        "OK",
+        "已派发",
+        "已派发"
+      ],
+      "railHitsComposer": false,
+      "documentScrollWidth": 1000
+    },
+    {
+      "name": "1000-dark",
+      "width": 1000,
+      "height": 820,
+      "dark": true,
+      "shot": "docs/p1/self-check-1000-dark.png",
+      "bodyBg": "rgb(21, 18, 14)",
+      "settled": true,
+      "railCount": 1,
+      "railClass": "dsw-rail dsw-rail--compact dsw-rail--docked dsw-rail--dim",
+      "compact": true,
+      "viewport": {
+        "w": 1000,
+        "h": 820
+      },
+      "rail": {
+        "x": 56,
+        "y": 646,
+        "w": 258,
+        "h": 38
+      },
+      "railPosition": "static",
+      "railWidth": "258px",
+      "centerCol": {
+        "x": 56,
+        "y": 0,
+        "w": 944,
+        "h": 820
+      },
+      "composer": {
+        "x": 169,
+        "y": 700,
+        "w": 708,
+        "h": 36
+      },
+      "textColumn": {
+        "left": 185,
+        "right": 865,
+        "width": 680
+      },
+      "railHitsText": [],
+      "railHitsComposer": false,
+      "documentScrollWidth": 1000
+    },
+    {
+      "name": "760-narrow",
+      "width": 760,
+      "height": 820,
+      "dark": false,
+      "shot": "docs/p1/self-check-760-narrow.png",
+      "bodyBg": "rgb(240, 233, 218)",
+      "settled": true,
+      "railCount": 1,
+      "railClass": "dsw-rail dsw-rail--compact dsw-rail--docked dsw-rail--dim",
+      "compact": true,
+      "viewport": {
+        "w": 760,
+        "h": 820
+      },
+      "rail": {
+        "x": 56,
+        "y": 646,
+        "w": 258,
+        "h": 38
+      },
+      "railPosition": "static",
+      "railWidth": "258px",
+      "centerCol": {
+        "x": 56,
+        "y": 0,
+        "w": 704,
+        "h": 820
+      },
+      "composer": {
+        "x": 72,
+        "y": 700,
+        "w": 661,
+        "h": 36
+      },
+      "textColumn": {
+        "left": 88,
+        "right": 721,
+        "width": 633
+      },
+      "railHitsText": [],
+      "railHitsComposer": false,
+      "documentScrollWidth": 760
+    }
+  ],
+  "layoutStability": {
+    "shownBefore": {
+      "center": 1440,
+      "composer": 708
+    },
+    "hiddenFacts": {
+      "railGone": false,
+      "wing": false,
+      "center": 1440,
+      "composer": 708
+    },
+    "shownAfter": {
+      "railBack": true,
+      "center": 1440,
+      "composer": 708
+    },
+    "railClosed": "no-close",
+    "wingBack": false
+  },
+  "finishedAt": "2026-11-08T08:48:40.026Z",
+  "ok": false
+}

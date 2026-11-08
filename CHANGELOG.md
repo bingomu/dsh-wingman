@@ -1,5 +1,20 @@
 # 更新日志
 
+## 1.0.0 — 2026-11-07
+
+**第一个稳定版：包名统一到 `@bingomu/dsh-wingman`**
+
+- 包名 `dsh-wingman` → `@bingomu/dsh-wingman`，和 `@bingomu/dsh-followup`、`@bingomu/dsh-usage-printer` 对齐。安装：`dsh plugin add github:bingomu/dsh-wingman#v1.0.0`（v0.33.3 之后旧的裸包名不再更新；已经装过旧版的，用这条命令重装一次即可）
+- 改名三处必须同步，漏一处侧栏直接不显示：`package.json` 的 `name`、`cordis.patch.yml` 插入行的 `name`、`client.js` 首行 `__ModuleLoader__.load({ id })`。这次顺手把仓库自检 `scripts/check-client.mjs` 里写死的入口 id 改成从 `package.json` 读——它本来就是防这件事的，结果自己先漏了
+- 本机数据与路由不变：`~/.dsh/wingman/*.json`、`/dsh-wingman/api/*`、localStorage 键名照旧——升级不丢常用指令 / 自定义入口 / 提醒 / 位置 / 钉住状态
+- 插件卡片中文名「对话工具条」；图标换成线稿羽毛，插件卡片与市场图标同一枚
+- 打包补齐 `README.en.md`（上一版 tarball 里没有英文说明）与 `screenshots.json`；验收过程截图 `docs/p1/` 不进包
+- 修：窄窗口（≤1100px）横排工具条压住宿主左下角头像与「收起侧栏」按钮。现在横排条跟着侧栏右缘让开（侧栏展开从 284px 起、收起从 60px 起，每 800ms 复量一次），底部抽屉底边也从 86px 抬到 122px，展开时不再压输入框与发送键
+- 修：「对话状态」的子代理数一直是历史总数——宿主 `listChildren` 返回的是历史目录、没有 activity 字段。现在按 `listDescendants` 的 `activity === 'running'` 数真正在跑的；旧宿主没有该接口时文案降级成「本会话 N 个子代理」，不再假称「运行中」。面板开着时每 4 秒静默重取一次（面板关着不发请求）
+- P1 三项真机验收：AI 改写写回输入框 / 模型·token·子代理·跟进四项与地面真值对账 / 「记」落到便签墙，证据见 `docs/04-real-check-2026-11-07.md`
+- 发布物料：中英主视觉（重导）、4 张真实截图（中英各一套，设置面板重拍到 1.0.0）、英文 `README.en.md`、`screenshots.json`；架构图沿用 v0.33.3 那版（HTTP 路由与服务接法未变，按「轻产品不重画」的规矩不新画）
+- 测试：`npm test` 35 个用例全过；`npm run check` 12 个 JS 语法检查 + client.js 静态自检 6 项全过
+
 ## 0.33.3 — 2026-11-06
 
 **收起态的那片羽毛也能拖了**

@@ -4,4 +4,4 @@
 # 另在 conversation.input.dock 挂一个空渲染的桥，用来拿到输入框的写入能力。
 - insert:
     - id: dsh-wingman
-      name: 'dsh-wingman'
+      name: '@bingomu/dsh-wingman'

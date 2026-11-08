@@ -2,9 +2,9 @@
 
 ![Wingman: a tool strip beside the conversation](assets/hero-en-1200x630.png)
 
-**Wingman: a tool strip that lives beside the conversation.** A 42px strip stays docked; click it and a panel slides out. It changes no layout, takes no left column, steals no right column. The first blade is Note: jot something down without leaving the conversation — a sticky note, a follow-up, or a reminder.
+**Wingman: a tool strip that lives beside the conversation.** A 42px strip stays docked; click it and a panel slides out. It changes no layout, takes no left column, steals no right column — below 1100px wide it moves above the composer and takes about 42px of height. The first blade is Note: jot something down without leaving the conversation — a sticky note, a follow-up, or a reminder.
 
-> Status: **v0.33.3**. Five built-in blades — Note / Process / Snippets / Summary / Status — plus custom entries and a settings gear.
+> Status: **v1.0.0**. Five built-in blades — Note / Process / Snippets / Summary / Status — plus custom entries and a settings gear.
 
 [中文](README.md) · English
 
@@ -66,7 +66,7 @@ The preset entry colours: Note=amber, Process=sage, Snippets=blue, Summary=rose,
 | Drag the top grip | Move the strip; the position is remembered. Release within 56px of the sidebar's right edge to **snap** |
 | Click the magnet (bottom) | Snap / unsnap in one click; while snapped it follows sidebar collapse and window resizes |
 | Drag a few pixels sideways while snapped | Nudge the snap offset (±140px), used from then on |
-| Window ≤ 1100px | The strip becomes a horizontal row at the bottom and the panel becomes a bottom drawer (12px on each side) |
+| Window ≤ 1100px | The strip becomes one row above the composer (about 42px tall, covering no control; collapsing is not offered there) and the panel becomes a bottom drawer |
 
 ## What the Status panel shows
 
@@ -138,10 +138,10 @@ Click the gear at the bottom:
 
 ## Install
 
-Install from GitHub (DSH ≥ 0.2.1-rc.5 required):
+Install from GitHub (DSH ≥ 0.2.1-rc.5 required). Package name: `@bingomu/dsh-wingman`:
 
 ```bash
-dsh plugin add github:bingomu/dsh-wingman#v0.33.3
+dsh plugin add github:bingomu/dsh-wingman#v1.0.0
 ```
 
 For local development you can also hand the plugin directory to the plugin manager:
@@ -181,7 +181,7 @@ A local-directory install is a symlink, so changes to `client.js` hot-reload wit
 
 ```bash
 npm run check   # syntax check for 12 JS files + the static client.js self-check
-npm test        # 8 test files, 33 cases
+npm test        # 8 test files, 35 cases
 ```
 
 Design trade-offs live in [docs/01-design.md](docs/01-design.md), the plan in [ROADMAP.md](ROADMAP.md), and changes in [CHANGELOG.md](CHANGELOG.md).

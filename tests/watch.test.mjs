@@ -6,11 +6,16 @@ import { join } from 'node:path'
 
 import { collectWatch } from '../lib/watch.js'
 
-function fakeCtx({ session, measurement, children } = {}) {
+function fakeCtx({ session, measurement, children, descendants } = {}) {
   const map = {}
   if (session !== undefined) map.sessions = { get: () => session }
   if (measurement !== undefined) map.tokenMeter = { measure: () => measurement }
-  if (children !== undefined) map.subagents = { listChildren: async () => children }
+  if (children !== undefined || descendants !== undefined) {
+    map.subagents = {
+      ...(children === undefined ? {} : { listChildren: async () => children }),
+      ...(descendants === undefined ? {} : { listDescendants: async () => descendants }),
+    }
+  }
   return { get: (name) => map[name] }
 }
 
@@ -45,14 +50,46 @@ test('全部服务在场时，四项数据都取到', async () => {
       tasks: [{ done: true }, { done: false }, { title: 'x' }],
     }))
 
-    const result = await collectWatch(fakeCtx({ session, measurement, children: [{}, {}] }), 's-1')
+    const result = await collectWatch(fakeCtx({
+      session,
+      measurement,
+      descendants: [
+        { kind: 'child', id: 'c-1', mode: 'one-shot', activity: 'running' },
+        { kind: 'child', id: 'c-2', mode: 'external', activity: 'inactive' },
+        { kind: 'child', id: 'c-3', mode: 'one-shot', activity: 'inactive' },
+        { kind: 'diagnostic', id: 'c-4', reason: 'unsupported' },
+      ],
+    }), 's-1')
     assert.equal(result.model.model, 'deepseek-v4')
     assert.equal(result.model.contextWindow, 100000)
     assert.equal(result.tokens.total, 62000)
     assert.equal(result.tokens.input, 50000)
     assert.equal(result.tokens.cacheRead, 9000)
-    assert.equal(result.subagents.total, 2)
+    assert.equal(result.subagents.total, 3)
+    assert.equal(result.subagents.running, 1)
     assert.equal(result.followups.open, 2)
+  })
+})
+
+test('子代理：只有 listChildren（旧宿主）时 total 有值、running 为 null，不谎报运行中', async () => {
+  await withHome(async () => {
+    const result = await collectWatch(fakeCtx({ session, children: [{ id: 'c-1' }, { id: 'c-2' }] }), 's-1')
+    assert.equal(result.subagents.total, 2)
+    assert.equal(result.subagents.running, null)
+  })
+})
+
+test('子代理：listDescendants 里没有 running 时 running 为 0（跑完要归零）', async () => {
+  await withHome(async () => {
+    const result = await collectWatch(fakeCtx({
+      session,
+      descendants: [
+        { kind: 'child', id: 'c-1', mode: 'one-shot', activity: 'inactive' },
+        { kind: 'diagnostic', id: 'c-2', reason: 'corrupt' },
+      ],
+    }), 's-1')
+    assert.equal(result.subagents.total, 1)
+    assert.equal(result.subagents.running, 0)
   })
 })
 

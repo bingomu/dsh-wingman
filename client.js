@@ -1,12 +1,13 @@
 /**
  * Wingman · 浏览器半侧
  *
- * 在 `shell.overlay`（全帧浮层、默认点击穿透）挂一条贴正文左缘的细条：
- *   - 常驻 42px 宽，不参与布局，聊天区宽度不变；
+ * 宽栏（>1100px）在 `shell.overlay`（全帧浮层、默认点击穿透）挂一条贴正文左缘的细条：
+ *   - 常驻 42px 宽，浮层不参与布局，聊天区宽度不变；
+ * 窄栏（≤1100px）改成输入框上方一条 38px 高的横排，挂进 `conversation.input.dock` 的流里，
+ * 占自己的位置、不压任何一个宿主控件（这个宽度下不再提供「收起」）。
  *   - 点「❝」滑出 308px 面板：常用指令列表 → 点一下插入输入框；
  *   - 「＋」打开「更多」，列出后续入口的排期；
- *   - 可拖动（顶部握把），位置/当前入口/钉住状态存本地；
- *   - 窗口窄于 1100px 时收成底部一颗圆钮。
+ *   - 宽栏可拖动（顶部握把），位置/当前入口/钉住状态存本地。
  *
  * 另在 `conversation.input.dock` 挂一个空渲染的桥：那里有 `inputActions`，
  * 浮层里没有，所以由桥把写入能力交给细条，避免直接碰宿主的输入组件。
@@ -15,7 +16,7 @@
  */
 
 window.__ModuleLoader__.load({
-  id: 'dsh-wingman',
+  id: '@bingomu/dsh-wingman',
   factory(require) {
     const React = require('react')
     const h = React.createElement
@@ -61,6 +62,11 @@ window.__ModuleLoader__.load({
     const SNAP_KEY = 'dsh-wingman/snap/v1'
     const SNAP_OFFSET_KEY = 'dsh-wingman/snap-offset/v1'
     const COMPACT_QUERY = '(max-width:1100px)'
+    /** compact 横排时让开侧栏图标条（56px）的左边距，底部留 24px。 */
+    const COMPACT_INSET = 60
+    const COMPACT_BOTTOM = 24
+    /** compact 底部抽屉的底边：抬到输入框上方，避免展开时盖住输入框与发送按钮。 */
+    const COMPACT_PANEL_BOTTOM = 122
     /** 拖到离侧栏边缘这么近，松手就吸附。 */
     const SNAP_PX = 56
 
@@ -158,6 +164,7 @@ window.__ModuleLoader__.load({
       watchSubagents: '子代理',
       watchFollowups: '跟进',
       watchRunning: '{n} 个运行中',
+      watchTotal: '本会话 {n} 个子代理',
       watchOpen: '{n} 条未完成',
       watchRefresh: '刷新',
       watchNoSession: '先打开一个会话',
@@ -300,7 +307,6 @@ window.__ModuleLoader__.load({
       transformInsert: '插入输入框',
       transformResultSave: '存进常用指令',
       transformCopiedResult: '已复制结果',
-      version: '当前 v0.6.2 · 常用指令 / 对话状态 / 速记 / 选中文字',
     }
 
     const en = {
@@ -368,6 +374,7 @@ window.__ModuleLoader__.load({
       watchSubagents: 'Subagents',
       watchFollowups: 'Follow-ups',
       watchRunning: '{n} running',
+      watchTotal: '{n} subagents this session',
       watchOpen: '{n} open',
       watchRefresh: 'Refresh',
       watchNoSession: 'Open a conversation first',
@@ -510,7 +517,6 @@ window.__ModuleLoader__.load({
       transformInsert: 'Insert into composer',
       transformResultSave: 'Save as snippet',
       transformCopiedResult: 'Result copied',
-      version: 'v0.6.2 · snippets / status / note / process',
     }
     /* ------------------------------------------------------------ 工具 */
 
@@ -889,8 +895,17 @@ window.__ModuleLoader__.load({
 
     // 浮层拿不到 inputActions，由 input.dock 里的空组件把它交出来。
     const inputBridge = { actions: null, sessionId: null }
+    /** 窄栏时把横排条挂进输入框 dock 的容器节点（在流里，不浮层）。 */
+    const dockHost = { node: null }
 
     function InputBridge(props) {
+      const dockRef = useRef(null)
+      useEffect(() => {
+        dockHost.node = dockRef.current
+        return () => {
+          if (dockHost.node === dockRef.current) dockHost.node = null
+        }
+      })
       const actions = props !== null && props !== undefined ? props.inputActions : null
       const sessionId = props !== null && props !== undefined && typeof props.sessionId === 'string' ? props.sessionId : null
       inputBridge.actions = actions === undefined ? null : actions
@@ -903,7 +918,8 @@ window.__ModuleLoader__.load({
           if (inputBridge.sessionId === sessionId) inputBridge.sessionId = null
         }
       }, [actions, sessionId])
-      return null
+      // 窄栏时的横排条会挂进这个节点：它在输入框 dock 的流里，天然不压任何控件。
+      return h('div', { className: 'dsw-dock', ref: dockRef })
     }
 
     function insertIntoComposer(text) {
@@ -1255,8 +1271,10 @@ window.__ModuleLoader__.load({
       const { t } = props
       const [state, setState] = useState({ loading: true, data: null, error: null })
 
-      const load = useCallback(async () => {
-        setState((current) => ({ ...current, loading: true, error: null }))
+      const load = useCallback(async (silent = false) => {
+        // 静默刷新（面板开着时每 4 秒一次）不置 loading、不把好数据换成错误态，
+        // 否则面板会一闪一闪，网络抖一下就整块空掉。
+        if (!silent) setState((current) => ({ ...current, loading: true, error: null }))
         try {
           const sessionId = inputBridge.sessionId
           const url = typeof sessionId === 'string' && sessionId !== ''
@@ -1267,17 +1285,32 @@ window.__ModuleLoader__.load({
           if (payload !== null && payload !== undefined && payload.ok === true) {
             setState({ loading: false, data: payload.value, error: null })
           } else if (payload?.error?.code === 'not_found') {
+            if (silent) return
             setState({ loading: false, data: null, error: t('watchNeedsRestart') })
           } else {
+            if (silent) return
             setState({ loading: false, data: null, error: aiErrorText(t, payload?.error?.message) })
           }
         } catch (failure) {
+          if (silent) return
           setState({ loading: false, data: null, error: t('watchNeedsRestart') })
         }
       }, [t])
 
       useEffect(() => {
         void load()
+      }, [load])
+
+      // 面板开着的时候自己更新：子代理跑完、跟进被划掉，用户不用去点「刷新」。
+      // 面板一关（组件卸载）就停，后台不轮询。
+      useEffect(() => {
+        // 注意：本组件后面有个 `const window = ...`（上下文窗口），会遮住全局 window，
+        // 所以这里必须用 globalThis 拿定时器。
+        const timer = globalThis.setInterval(() => {
+          if (document.visibilityState === 'hidden') return
+          void load(true)
+        }, 4000)
+        return () => globalThis.clearInterval(timer)
       }, [load])
 
       const data = state.data
@@ -1296,10 +1329,27 @@ window.__ModuleLoader__.load({
             ? 'var(--dsw-alias-state-warn-primary)'
             : 'var(--dsw-alias-label-primary)'
 
+      // 子代理：running 有值才是「正在跑」；只有 total 时说成「本会话 N 个子代理」，不谎报运行中。
+      const subagentText = (() => {
+        const info = data?.subagents
+        if (info === null || info === undefined) return '—'
+        const total = Number.isFinite(info.total) ? info.total : null
+        const running = Number.isFinite(info.running) ? info.running : null
+        if (running !== null) {
+          // 宿主对「external（Codex）子代理」没有 activity 信号，永远报 inactive；
+          // 这种情况下把「共 N 个」补在后面，别让用户以为什么都没起。
+          if (running > 0) return t('watchRunning', { n: running })
+          return total !== null && total > 0
+            ? `${t('watchRunning', { n: running })} · ${t('watchTotal', { n: total })}`
+            : t('watchRunning', { n: running })
+        }
+        return total === null ? '—' : t('watchTotal', { n: total })
+      })()
+
       const rows = [
         ['watchModel', model === null ? '—' : `${model.provider ?? ''} · ${model.model ?? ''}`.replace(/^ · /, '')],
         ['watchRound', tokens === null ? '—' : `${t('watchInput')} ${formatTokens(tokens.input)} · ${t('watchOutput')} ${formatTokens(tokens.output)}${tokens.cacheRead !== null ? ` · ${t('watchCache')} ${formatTokens(tokens.cacheRead)}` : ''}`],
-        ['watchSubagents', data?.subagents === null || data?.subagents === undefined ? '—' : t('watchRunning', { n: data.subagents.total })],
+        ['watchSubagents', subagentText],
         ['watchFollowups', data?.followups === null || data?.followups === undefined ? '—' : t('watchOpen', { n: data.followups.open })],
       ]
 
@@ -2057,7 +2107,7 @@ window.__ModuleLoader__.load({
       return parts.join('')
     })()
 
-    const VERSION = '0.33.3'
+    const VERSION = '1.0.0'
 
     function EyeIcon(props) {
       return h('svg', { viewBox: '0 0 16 16', width: 14, height: 14, 'aria-hidden': true, style: { display: 'block' } },
@@ -2337,6 +2387,13 @@ window.__ModuleLoader__.load({
       const [pinned, setPinned] = useState(() => readJsonFlag(PIN_KEY, false))
       const [position, setPosition] = useState(loadPos)
       const [compact, setCompact] = useState(() => typeof window !== 'undefined' && window.matchMedia(COMPACT_QUERY).matches)
+      // compact 横排时贴在侧栏右缘外侧：侧栏收起是 56px，展开是 280px，
+      // 写死一个 left 一定会撞上其中一种状态（这正是「压住宿主账号菜单」的根因）。
+      const [compactInset, setCompactInset] = useState(COMPACT_INSET)
+      // 窄栏时横排条要挂进输入框 dock；dock 由 InputBridge 在另一处渲染，所以轮询等它就位。
+      const [dockNode, setDockNode] = useState(null)
+      /** 窄栏且 dock 容器就位时，横排条挂进输入框 dock（在流里），不再浮层定位。 */
+      const docked = compact && dockNode !== null && dockNode.isConnected !== false
       const [order, setOrder] = useState(() => {
         const stored = readStore()
         if (stored.orderVersion === ORDER_VERSION) return normalizeOrder(stored.order)
@@ -2432,6 +2489,45 @@ window.__ModuleLoader__.load({
         query.addEventListener('change', onChange)
         return () => query.removeEventListener('change', onChange)
       }, [])
+
+
+      useEffect(() => {
+        if (!compact) {
+          setDockNode(null)
+          return undefined
+        }
+        const pick = () => {
+          const node = dockHost.node
+          if (node === null || node.isConnected === false) return
+          setDockNode((current) => (current === node ? current : node))
+        }
+        pick()
+        // 切换会话/宿主重排都会换掉 dock 节点，所以要一直跟，不能只找一次。
+        const timer = globalThis.setInterval(pick, 400)
+        return () => globalThis.clearInterval(timer)
+      }, [compact])
+
+      // compact（≤1100px）时实时跟侧栏右缘：侧栏折叠/展开都会改边；
+      // 只跟这条边的位置走，不碰宿主的布局。
+      useEffect(() => {
+        if (!compact) return undefined
+        let alive = true
+        const measure = () => {
+          if (!alive) return
+          const found = measureEdge([railRef.current, panelRef.current])
+          if (found === null) return
+          if (found < 40 || found > window.innerWidth * 0.45) return
+          setCompactInset(Math.max(COMPACT_INSET, Math.round(found + 4)))
+        }
+        measure()
+        const timer = window.setInterval(measure, 800)
+        window.addEventListener('resize', measure)
+        return () => {
+          alive = false
+          window.clearInterval(timer)
+          window.removeEventListener('resize', measure)
+        }
+      }, [compact])
 
       // 到点提醒：每 30 秒看一次，只提示一次
       useEffect(() => {
@@ -2754,7 +2850,7 @@ window.__ModuleLoader__.load({
       const featherLeft = (snap && edge !== null ? snappedLeft : railLeft) + 6
       const featherTop = position.top + 8
       const earStyle = compact
-        ? { left: 6, bottom: 28 }
+        ? { left: compactInset, bottom: COMPACT_BOTTOM }
         : { left: featherLeft, top: featherTop }
 
       // 羽毛也能拖：拖到哪就停在哪，松手时贴着侧栏照样吸附；没拖动就是"展开"。
@@ -2833,8 +2929,9 @@ window.__ModuleLoader__.load({
       const storedSize = panelSizes[blade] ?? null
       const wantW = storedSize === null ? 308 : Math.min(Math.max(storedSize.w, 280), maxPanelW)
       const wantH = storedSize === null ? null : Math.min(Math.max(storedSize.h, 220), maxPanelH)
+      // 面板在 compact 下是底部抽屉：底边抬到输入框之上，展开时不会盖住输入框和发送按钮。
       const panelStyle = compact
-        ? { left: panelLeft, right: 12, bottom: 86, width: 'auto', maxHeight: '64vh', '--tab': activeTone }
+        ? { left: compactInset, right: 12, bottom: COMPACT_PANEL_BOTTOM, width: 'auto', maxHeight: `calc(100vh - ${COMPACT_PANEL_BOTTOM + 80}px)`, '--tab': activeTone }
         : {
           left: panelLeft,
           top: panelTop,
@@ -2844,9 +2941,16 @@ window.__ModuleLoader__.load({
           '--tab': activeTone,
         }
 
-      const railStyle = compact
-        ? { left: 14, top: 'auto', bottom: 24 }
-        : { left: railLeft, top: position.top }
+      // compact（≤1100px）横排：让开左侧 56px 的侧栏图标条——用户名/头像按钮就压在那里，
+      // 之前的 left:14 会把「账号菜单」和「收起侧栏」整个盖掉。
+      // 窄栏：声明式地把横排条 portal 进输入框 dock（React 管理挂载，不会有「节点掉回 body」的竞争）。
+      const wrapDock = (node) => (docked ? createPortal(node, dockNode) : node)
+
+      const railStyle = docked
+        ? {}
+        : compact
+          ? { left: compactInset, top: 'auto', bottom: COMPACT_BOTTOM }
+          : { left: railLeft, top: position.top }
 
       const handleInsert = useCallback((text) => insertIntoComposer(text), [])
 
@@ -2940,7 +3044,7 @@ window.__ModuleLoader__.load({
         : null
 
       return h(React.Fragment, null,
-        railHidden
+        railHidden && !compact
           ? h('button', {
             type: 'button',
             className: 'dsw-wing',
@@ -2962,10 +3066,10 @@ window.__ModuleLoader__.load({
               showRail()
             },
           }, h(FeatherIcon, { size: 22 }))
-          : h('div', {
+          : wrapDock(h('div', {
           ref: railRef,
-          onPointerDown: onRailPointerDown,
-          className: `dsw-rail${compact ? ' dsw-rail--compact' : ''}${!compact && snap && edge !== null ? ' dsw-rail--snapped' : ''}${dragging ? ' dsw-rail--dragging' : ''}${railPinned ? '' : ' dsw-rail--dim'}`,
+          onPointerDown: docked ? undefined : onRailPointerDown,
+          className: `dsw-rail${compact ? ' dsw-rail--compact' : ''}${docked ? ' dsw-rail--docked' : ''}${!compact && snap && edge !== null ? ' dsw-rail--snapped' : ''}${dragging ? ' dsw-rail--dragging' : ''}${railPinned ? '' : ' dsw-rail--dim'}`,
           style: railStyle,
           'aria-label': t('rail'),
         },
@@ -3051,7 +3155,7 @@ window.__ModuleLoader__.load({
           h('path', { d: 'M2.6 1.2v2.9', stroke: '#f6d3cf', strokeWidth: 3.2, strokeLinecap: 'butt' }),
           h('path', { d: 'M2.6 11.9v2.9', stroke: '#c7d8f0', strokeWidth: 3.2, strokeLinecap: 'butt' }),
         )),
-        h('button', {
+        compact ? null : h('button', {
           type: 'button',
           className: 'dsw-rail__close',
           title: t('railClose'),
@@ -3062,7 +3166,7 @@ window.__ModuleLoader__.load({
           },
           onClick: hideRail,
         }, '×'),
-        ),
+        )),
         guide === null ? null : h('div', { className: 'dsw-guide', style: { left: guide } }),
         tip === null ? null : h('div', {
           className: 'dsw-tip',
@@ -3135,6 +3239,13 @@ window.__ModuleLoader__.load({
       '.dsw-cell{cursor:grab}',
       '.dsw-rail--dragging .dsw-cell{cursor:grabbing}',
       '.dsw-rail--compact{flex-direction:row;width:auto;align-items:center}',
+      '.dsw-dock{display:flex;align-items:center;gap:4px;min-width:0;max-width:100%;padding:2px 0}',
+      '.dsw-dock:empty{display:none}',
+      '.dsw-dock::-webkit-scrollbar{display:none}',
+      '.dsw-rail--docked{position:static!important;left:auto!important;top:auto!important;bottom:auto!important;right:auto!important;width:auto;max-width:100%;transform:none!important;opacity:1!important;transition:none!important}',
+      '.dsw-rail--docked .dsw-grip,.dsw-rail--docked .dsw-magnet{display:none}',
+      '.dsw-rail--docked .dsw-cell{width:38px;height:38px;border-radius:11px}',
+      '.dsw-rail--docked .dsw-rail__close{position:static;margin:0 0 0 2px}',
       '.dsw-rail--dragging{transition:none;cursor:grabbing}',
       '.dsw-rail--dim{opacity:.4;transition:opacity .15s ease}',
       '.dsw-rail--dim:hover{opacity:1}',
