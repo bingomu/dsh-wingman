@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Wingman · 四步用法（中文）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1600px; height: 420px; }
+  body {
+    background: #f7f8f9; color: #14161a;
+    font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased; overflow: hidden;
+  }
+  .wrap { position: relative; width: 1600px; height: 420px; padding: 54px 72px 0; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .18em; color: #6b7280; text-transform: uppercase; }
+  .title { margin-top: 14px; font-size: 34px; font-weight: 700; letter-spacing: -.4px; }
+  .sub { margin-top: 10px; font-size: 15px; color: #4b5563; }
+  .flow { margin-top: 44px; display: flex; align-items: stretch; gap: 0; }
+  .step { width: 300px; }
+  .box {
+    height: 118px; border: 1px solid #e2e5e9; background: #fff; border-radius: 12px;
+    padding: 16px 18px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .no { font-size: 11px; font-weight: 700; letter-spacing: .14em; color: #9aa2ad; }
+  .name { font-size: 17px; font-weight: 700; }
+  .desc { font-size: 13px; line-height: 1.5; color: #5b6472; }
+  .arrow { width: 76px; display: flex; align-items: center; justify-content: center; }
+  .arrow svg { display: block; }
+  .foot { position: absolute; left: 72px; bottom: 40px; font-size: 12.5px; color: #6b7280; }
+  .kbd {
+    font-family: ui-monospace, Menlo, monospace; font-size: 12px;
+    border: 1px solid #e2e5e9; background: #fff; border-radius: 6px; padding: 3px 7px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="eyebrow">Usual flow</div>
+    <div class="title">用一次只要四步</div>
+    <div class="sub">选中一段话，点一下，结果就落在你手边——不离开对话，也不切换软件。</div>
+
+    <div class="flow">
+      <div class="step">
+        <div class="box">
+          <div class="no">01</div>
+          <div class="name">在正文里选中一段</div>
+          <div class="desc">读到想用的那句，直接划选它。</div>
+        </div>
+      </div>
+      <div class="arrow">
+        <svg width="56" height="16" viewBox="0 0 56 16" fill="none"><path d="M0 8h44" stroke="#c2c8d0" stroke-width="1.5"/><path d="M42 3l8 5-8 5" stroke="#c2c8d0" stroke-width="1.5" fill="none"/></svg>
+      </div>
+      <div class="step">
+        <div class="box">
+          <div class="no">02</div>
+          <div class="name">点工具条上的 ✦</div>
+          <div class="desc">贴边那条里的第二颗，面板滑出来。</div>
+        </div>
+      </div>
+      <div class="arrow">
+        <svg width="56" height="16" viewBox="0 0 56 16" fill="none"><path d="M0 8h44" stroke="#c2c8d0" stroke-width="1.5"/><path d="M42 3l8 5-8 5" stroke="#c2c8d0" stroke-width="1.5" fill="none"/></svg>
+      </div>
+      <div class="step">
+        <div class="box">
+          <div class="no">03</div>
+          <div class="name">挑一个动作</div>
+          <div class="desc">引用、存成便签、或者交给模型改写 / 提炼 / 翻译。</div>
+        </div>
+      </div>
+      <div class="arrow">
+        <svg width="56" height="16" viewBox="0 0 56 16" fill="none"><path d="M0 8h44" stroke="#c2c8d0" stroke-width="1.5"/><path d="M42 3l8 5-8 5" stroke="#c2c8d0" stroke-width="1.5" fill="none"/></svg>
+      </div>
+      <div class="step">
+        <div class="box">
+          <div class="no">04</div>
+          <div class="name">结果落在手边</div>
+          <div class="desc">进输入框、进便签墙，或存成常用指令——都不自动发送。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot">同样的四步也适用于「记一句话」：点 <span class="kbd">✎</span> → 选便签 / 跟进 / 提醒 → 回车。</div>
+  </div>
+</body>
+</html>

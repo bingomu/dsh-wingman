@@ -4,7 +4,7 @@
 
 **Wingman: a tool strip that lives beside the conversation.** A 42px strip stays docked; click it and a panel slides out. It changes no layout, takes no left column, steals no right column — below 1100px wide it moves above the composer and takes about 42px of height. The first blade is Note: jot something down without leaving the conversation — a sticky note, a follow-up, or a reminder.
 
-> Status: **v1.0.1**. Five built-in blades — Note / Process / Snippets / Summary / Status — plus custom entries and a settings gear.
+> Status: **v1.0.2**. Five built-in blades — Note / Process / Snippets / Summary / Status — plus custom entries and a settings gear.
 
 [中文](README.md) · English
 
@@ -40,15 +40,18 @@ Collapsed, it is just a feather; click it to bring the strip back, or drag it so
 
 The preset entry colours: Note=amber, Process=sage, Snippets=blue, Summary=rose, Status=slate; custom entries=lavender; the settings gear is neutral grey and takes no colour.
 
-## How it fits together
+## How you use it: four steps
 
-![Wingman architecture: browser half, host routes, local JSON and the host services it reuses](assets/diagram-en.png)
+![Four steps: select -> click ✦ -> pick an action -> it lands next to you](assets/flow-en.png)
 
-- **Browser half (`client.js`)**: the edge strip and panel, mounted on the host's conversation slots; it owns rendering and interaction.
-- **Host half (`index.js` + `lib/routes.js`)**: registers eight local HTTP routes at `/dsh-wingman/api/{snippets,custom,run,reminders,tail,recap,transform,watch}`.
-- **Local storage**: `$DSH_HOME/wingman/{snippets,custom,reminders}.json`, written atomically; these three files are read and written locally only, never over the network. The Process AI actions and Summary run through the host model (see the last point below).
-- **Reusing other plugins**: notes go through `/dsh-sticky-wall/api/notes` and follow-ups through `/followup/add`; no second store is created.
-- **Using host services**: the Process AI actions and Summary call the current conversation's model; Status reads session and token data.
+1. **Select** the line you want in the conversation
+2. Click **✦** on the edge strip
+3. Pick an action: quote / keep as a note / save to snippets / copy, or hand it to the model to rewrite, summarise or translate
+4. The result lands in the **composer, the sticky wall or your snippets** — nothing is sent automatically
+
+The same four steps work for a one-line note: **✎** → note / follow-up / reminder → Enter.
+
+> For how it is built, see the code and [`docs/01-design.md`](docs/01-design.md); the README only covers usage.
 
 ## What it can do
 
@@ -151,7 +154,7 @@ Click the gear at the bottom:
 Install from GitHub (DSH ≥ 0.2.1-rc.5 required). Package name: `@bingomu/dsh-wingman`:
 
 ```bash
-dsh plugin add github:bingomu/dsh-wingman#v1.0.1
+dsh plugin add github:bingomu/dsh-wingman#v1.0.2
 ```
 
 For local development you can also hand the plugin directory to the plugin manager:

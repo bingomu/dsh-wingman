@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Wingman · Four steps (English)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1600px; height: 420px; }
+  body {
+    background: #f7f8f9; color: #14161a;
+    font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased; overflow: hidden;
+  }
+  .wrap { position: relative; width: 1600px; height: 420px; padding: 54px 72px 0; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .18em; color: #6b7280; text-transform: uppercase; }
+  .title { margin-top: 14px; font-size: 34px; font-weight: 700; letter-spacing: -.4px; }
+  .sub { margin-top: 10px; font-size: 15px; color: #4b5563; }
+  .flow { margin-top: 44px; display: flex; align-items: stretch; gap: 0; }
+  .step { width: 300px; }
+  .box {
+    height: 118px; border: 1px solid #e2e5e9; background: #fff; border-radius: 12px;
+    padding: 16px 18px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .no { font-size: 11px; font-weight: 700; letter-spacing: .14em; color: #9aa2ad; }
+  .name { font-size: 17px; font-weight: 700; }
+  .desc { font-size: 13px; line-height: 1.5; color: #5b6472; }
+  .arrow { width: 76px; display: flex; align-items: center; justify-content: center; }
+  .arrow svg { display: block; }
+  .foot { position: absolute; left: 72px; bottom: 40px; font-size: 12.5px; color: #6b7280; }
+  .kbd {
+    font-family: ui-monospace, Menlo, monospace; font-size: 12px;
+    border: 1px solid #e2e5e9; background: #fff; border-radius: 6px; padding: 3px 7px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="eyebrow">Usual flow</div>
+    <div class="title">Four steps, one go</div>
+    <div class="sub">Select a sentence, click once, and the result lands next to you — without leaving the conversation.</div>
+
+    <div class="flow">
+      <div class="step">
+        <div class="box">
+          <div class="no">01</div>
+          <div class="name">Select a passage</div>
+          <div class="desc">Highlight the line you want to use.</div>
+        </div>
+      </div>
+      <div class="arrow">
+        <svg width="56" height="16" viewBox="0 0 56 16" fill="none"><path d="M0 8h44" stroke="#c2c8d0" stroke-width="1.5"/><path d="M42 3l8 5-8 5" stroke="#c2c8d0" stroke-width="1.5" fill="none"/></svg>
+      </div>
+      <div class="step">
+        <div class="box">
+          <div class="no">02</div>
+          <div class="name">Click ✦ on the strip</div>
+          <div class="desc">The second cell of the edge strip slides the panel out.</div>
+        </div>
+      </div>
+      <div class="arrow">
+        <svg width="56" height="16" viewBox="0 0 56 16" fill="none"><path d="M0 8h44" stroke="#c2c8d0" stroke-width="1.5"/><path d="M42 3l8 5-8 5" stroke="#c2c8d0" stroke-width="1.5" fill="none"/></svg>
+      </div>
+      <div class="step">
+        <div class="box">
+          <div class="no">03</div>
+          <div class="name">Pick an action</div>
+          <div class="desc">Quote it, keep it as a note, or hand it to the model to rewrite, summarise or translate.</div>
+        </div>
+      </div>
+      <div class="arrow">
+        <svg width="56" height="16" viewBox="0 0 56 16" fill="none"><path d="M0 8h44" stroke="#c2c8d0" stroke-width="1.5"/><path d="M42 3l8 5-8 5" stroke="#c2c8d0" stroke-width="1.5" fill="none"/></svg>
+      </div>
+      <div class="step">
+        <div class="box">
+          <div class="no">04</div>
+          <div class="name">It lands next to you</div>
+          <div class="desc">Into the composer, the sticky wall, or your snippets — nothing is sent automatically.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot">The same four steps work for a one-line note: <span class="kbd">✎</span> → note / follow-up / reminder → Enter.</div>
+  </div>
+</body>
+</html>
