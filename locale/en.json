@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Wingman",
-    "description": "A tool strip pinned to the left edge of the conversation: snippets, status, note, process. No layout change, no extra sidebar."
+    "title": "Conversation tool strip",
+    "description": "A slim strip pinned to the left edge of the conversation: quick notes, selected text, saved commands, conversation recap and status — without changing the layout or taking a sidebar."
   }
 }
