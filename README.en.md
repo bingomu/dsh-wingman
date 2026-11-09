@@ -4,7 +4,7 @@
 
 **Wingman: a tool strip that lives beside the conversation.** A 42px strip stays docked; click it and a panel slides out. It changes no layout, takes no left column, steals no right column — below 1100px wide it moves above the composer and takes about 42px of height. The first blade is Note: jot something down without leaving the conversation — a sticky note, a follow-up, or a reminder.
 
-> Status: **v1.0.3**. Five built-in blades — Note / Process / Snippets / Summary / Status — plus custom entries and a settings gear.
+> Status: **v1.0.4**. Five built-in blades — Note / Process / Snippets / Summary / Status — plus custom entries and a settings gear.
 
 [中文](README.md) · English
 
@@ -154,7 +154,7 @@ Click the gear at the bottom:
 Install from GitHub (DSH ≥ 0.2.1-rc.5 required). Package name: `@bingomu/dsh-wingman`:
 
 ```bash
-dsh plugin add github:bingomu/dsh-wingman#v1.0.3
+dsh plugin add github:bingomu/dsh-wingman#v1.0.4
 ```
 
 For local development you can also hand the plugin directory to the plugin manager:

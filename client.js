@@ -269,6 +269,7 @@ window.__ModuleLoader__.load({
       transformNote: '存成便签',
       transformSnippet: '存进常用指令',
       transformQuote: '引用插入',
+      selectionQuote: '引用',
       transformCopy: '复制',
       transformNoteSaved: '已存成便签',
       transformSnippetSaved: '已存进常用指令',
@@ -479,6 +480,7 @@ window.__ModuleLoader__.load({
       transformNote: 'Save as note',
       transformSnippet: 'Save as snippet',
       transformQuote: 'Quote into composer',
+      selectionQuote: 'Quote',
       transformCopy: 'Copy',
       transformNoteSaved: 'Saved as a note',
       transformSnippetSaved: 'Saved as a snippet',
@@ -2107,7 +2109,7 @@ window.__ModuleLoader__.load({
       return parts.join('')
     })()
 
-    const VERSION = '1.0.3'
+    const VERSION = '1.0.4'
 
     function EyeIcon(props) {
       return h('svg', { viewBox: '0 0 16 16', width: 14, height: 14, 'aria-hidden': true, style: { display: 'block' } },
@@ -3044,6 +3046,7 @@ window.__ModuleLoader__.load({
         : null
 
       return h(React.Fragment, null,
+        h(SelectionQuote, { t }),
         railHidden && !compact
           ? h('button', {
             type: 'button',
@@ -3207,6 +3210,96 @@ window.__ModuleLoader__.load({
       if (reactDom !== null && typeof reactDom.createPortal === 'function') createPortal = reactDom.createPortal
     } catch {
       // 没有 react-dom 就退回原来的挂载方式
+    }
+
+    /** 任意正文选区上的「引用」浮窗：宿主只给用户消息挂了引用入口，AI 回复没有，这里补上。 */
+    function SelectionQuote(props) {
+      const t = props.t
+      const [spot, setSpot] = useState(null)
+      const [busy, setBusy] = useState(false)
+
+      useEffect(() => {
+        let frame = 0
+        const hide = () => setSpot((current) => (current === null ? current : null))
+        const evaluate = () => {
+          try {
+            const selection = window.getSelection()
+            if (selection === null || selection === undefined || selection.rangeCount === 0 || selection.isCollapsed) return hide()
+            const text = String(selection.toString() ?? '').trim()
+            if (text.length < 3) return hide()
+            const anchor = selection.anchorNode
+            const element = anchor === null || anchor === undefined
+              ? null
+              : (anchor.nodeType === 1 ? anchor : anchor.parentElement)
+            if (element === null || element === undefined) return hide()
+            const tag = typeof element.tagName === 'string' ? element.tagName.toLowerCase() : ''
+            if (tag === 'textarea' || tag === 'input' || element.isContentEditable === true) return hide()
+            // 自己的工具条 / 面板 / 浮窗内部不处理
+            if (element.closest !== undefined && element.closest('.dsw-panel, .dsw-rail, .dsw-selquote, .dsw-wing') !== null) return hide()
+            // 宿主自己有「引用」入口的地方（用户消息气泡）交给宿主，避免出现两个按钮
+            if (element.closest !== undefined && element.closest('[data-text-interaction-source]') !== null) return hide()
+            const range = selection.getRangeAt(selection.rangeCount - 1)
+            const rect = range.getBoundingClientRect()
+            if (rect === null || rect === undefined || (rect.width === 0 && rect.height === 0)) return hide()
+            const width = 74
+            const left = Math.max(8, Math.min(rect.left, window.innerWidth - width - 8))
+            const above = rect.top - 38
+            const top = above >= 8 ? above : Math.min(window.innerHeight - 40, rect.bottom + 10)
+            setSpot({ left: Math.round(left), top: Math.round(top), text: text.slice(0, 6000) })
+          } catch {
+            hide()
+          }
+        }
+        const schedule = () => {
+          if (frame !== 0) return
+          frame = window.requestAnimationFrame(() => {
+            frame = 0
+            evaluate()
+          })
+        }
+        const onPointerUp = () => window.setTimeout(evaluate, 0)
+        const onHide = () => hide()
+        const onKey = (event) => {
+          if (event !== null && event !== undefined && event.key === 'Escape') hide()
+        }
+        document.addEventListener('mouseup', onPointerUp, true)
+        document.addEventListener('keyup', onKey, true)
+        document.addEventListener('selectionchange', schedule)
+        window.addEventListener('scroll', onHide, true)
+        window.addEventListener('resize', onHide)
+        return () => {
+          if (frame !== 0) window.cancelAnimationFrame(frame)
+          document.removeEventListener('mouseup', onPointerUp, true)
+          document.removeEventListener('keyup', onKey, true)
+          document.removeEventListener('selectionchange', schedule)
+          window.removeEventListener('scroll', onHide, true)
+          window.removeEventListener('resize', onHide)
+        }
+      }, [])
+
+      if (spot === null) return null
+      return h('button', {
+        type: 'button',
+        className: 'dsw-selquote',
+        style: { left: `${spot.left}px`, top: `${spot.top}px` },
+        title: `${t('selectionQuote')} · ${t('transformQuote')}`,
+        'aria-label': t('selectionQuote'),
+        onMouseDown: (event) => event.preventDefault(),
+        onClick: () => {
+          if (busy === true) return
+          setBusy(true)
+          const quoted = spot.text.split('\n').map((line) => `> ${line}`).join('\n')
+          insertIntoComposer(`${quoted}\n\n`)
+          try {
+            const selection = window.getSelection()
+            if (selection !== null && selection !== undefined && typeof selection.removeAllRanges === 'function') selection.removeAllRanges()
+          } catch {
+            // 清选区失败不影响插入
+          }
+          setSpot(null)
+          setBusy(false)
+        },
+      }, t('selectionQuote'))
     }
 
     function RailHost(props = {}) {
@@ -3481,6 +3574,9 @@ window.__ModuleLoader__.load({
       '.dsw-more__foot{font-size:10px;color:var(--dsw-alias-label-secondary);opacity:.6;text-align:right;margin-top:6px}',
       '.dsw-crash{position:fixed;left:16px;top:50%;transform:translateY(-50%);z-index:2147481999;pointer-events:auto;background:#ffe1e1;color:#7a1f1f;border:1px solid #e3a3a3;border-radius:10px;padding:8px 10px;font:12px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;max-width:240px;box-shadow:0 6px 20px rgba(0,0,0,.15)}',
       '@media (prefers-reduced-motion:reduce){.dsw-toast{animation:none}}',
+      '.dsw-selquote{position:fixed;z-index:2147482001;appearance:none;border:1px solid var(--dsw-alias-border-l3);background:var(--dsw-alias-button-floating-fill);color:var(--dsw-alias-label-primary);font:var(--dsw-font-xs-13);line-height:1;border-radius:999px;padding:6px 11px;cursor:pointer;box-shadow:var(--dsw-elevation-panel);transition:opacity .12s ease}',
+      '.dsw-selquote:hover{background:var(--dsw-alias-button-floating-hover)}',
+      '.dsw-selquote:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:2px}',
     ].join('')
 
     /* ------------------------------------------------------------ 入口 */
