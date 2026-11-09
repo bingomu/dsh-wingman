@@ -924,6 +924,22 @@ window.__ModuleLoader__.load({
       return h('div', { className: 'dsw-dock', ref: dockRef })
     }
 
+    /** 引用进输入框：优先用宿主的引用节点（插入式，发送后是一块可点开的引用），没有就退回 markdown 引用。 */
+    function insertQuoteIntoComposer(text) {
+      const actions = inputBridge.actions
+      if (actions === null || actions === undefined) return 'no-composer'
+      try {
+        if (typeof actions.insertQuote === 'function') {
+          if (actions.insertQuote(text) === false) return 'failed'
+          return 'ok'
+        }
+      } catch (error) {
+        console.warn('[dsh-wingman] 插入引用失败，改用 markdown 引用：', error)
+      }
+      const quoted = text.split('\n').map((line) => `> ${line}`).join('\n')
+      return insertIntoComposer(`${quoted}\n\n`)
+    }
+
     function insertIntoComposer(text) {
       const actions = inputBridge.actions
       if (actions === null || actions === undefined) return 'no-composer'
@@ -2109,7 +2125,7 @@ window.__ModuleLoader__.load({
       return parts.join('')
     })()
 
-    const VERSION = '1.0.4'
+    const VERSION = '1.0.5'
 
     function EyeIcon(props) {
       return h('svg', { viewBox: '0 0 16 16', width: 14, height: 14, 'aria-hidden': true, style: { display: 'block' } },
@@ -3288,8 +3304,7 @@ window.__ModuleLoader__.load({
         onClick: () => {
           if (busy === true) return
           setBusy(true)
-          const quoted = spot.text.split('\n').map((line) => `> ${line}`).join('\n')
-          insertIntoComposer(`${quoted}\n\n`)
+          insertQuoteIntoComposer(spot.text)
           try {
             const selection = window.getSelection()
             if (selection !== null && selection !== undefined && typeof selection.removeAllRanges === 'function') selection.removeAllRanges()

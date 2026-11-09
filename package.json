@@ -1,6 +1,6 @@
 {
   "name": "@bingomu/dsh-wingman",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "type": "module",
   "description": "Wingman：对话左侧的贴边工具条（速记 / 选中文字 / 常用指令 / 会话小结 / 对话状态）",
   "author": {
